@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Decompiled with JetBrains decompiler
+// Type: HwidGetCurrentEx.BitUtil
+// Assembly: HwidGetCurrentEx, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 200C1AD7-2186-49E5-9EB2-5AB7013ECA80 Assembly location: D:\downloads\Programs\HwidGetCurrentEx.dll
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -6,220 +11,116 @@ using System.Text;
 
 namespace HwidGetCurrentEx
 {
-	// Token: 0x02000002 RID: 2
-	internal static class BitUtil
-	{
-		// Token: 0x06000001 RID: 1 RVA: 0x00002050 File Offset: 0x00000250
-		public static string ReadNullTerminatedAnsiString(byte[] buffer, int offset)
-		{
-			StringBuilder stringBuilder = new StringBuilder();
-			for (char c = (char)buffer[offset]; c > '\0'; c = (char)buffer[offset])
-			{
-				stringBuilder.Append(c);
-				offset++;
-			}
-			return stringBuilder.ToString();
-		}
+    internal static class BitUtil
+    {
+        public static string ReadNullTerminatedAnsiString(byte[] buffer, int offset)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (char ch = (char)buffer[offset]; ch > char.MinValue; ch = (char)buffer[offset])
+            {
+                stringBuilder.Append(ch);
+                ++offset;
+            }
+            return stringBuilder.ToString();
+        }
 
-		// Token: 0x06000002 RID: 2 RVA: 0x00002090 File Offset: 0x00000290
-		public static byte[] StrToByteArray(string str)
-		{
-			Dictionary<string, byte> dictionary = new Dictionary<string, byte>();
-			for (int i = 0; i <= 0xFF; i++)
-			{
-				dictionary.Add(i.ToString("X2"), (byte)i);
-			}
-			List<byte> list = new List<byte>();
-			for (int j = 0; j < str.Length; j += 2)
-			{
-				list.Add(dictionary[str.Substring(j, 2)]);
-			}
-			return list.ToArray();
-		}
+        public static byte[] StrToByteArray(string str)
+        {
+            Dictionary<string, byte> dictionary = new Dictionary<string, byte>();
+            for (int index = 0; index <= (int)byte.MaxValue; ++index)
+                dictionary.Add(index.ToString("X2"), (byte)index);
+            List<byte> byteList = new List<byte>();
+            for (int startIndex = 0; startIndex < str.Length; startIndex += 2)
+                byteList.Add(dictionary[str.Substring(startIndex, 2)]);
+            return byteList.ToArray();
+        }
 
-		// Token: 0x06000003 RID: 3 RVA: 0x00002114 File Offset: 0x00000314
-		public static ulong array2ulong(byte[] bytes, int start, int length)
-		{
-			bytes = bytes.Skip(start).Take(length).ToArray<byte>();
-			ulong num = 0UL;
-			foreach (byte b in bytes)
-			{
-				num = num * 0x100UL + (ulong)b;
-			}
-			return num;
-		}
+        public static ulong array2ulong(byte[] bytes, int start, int length)
+        {
+            bytes = ((IEnumerable<byte>)bytes).Skip<byte>(start).Take<byte>(length).ToArray<byte>();
+            ulong num1 = 0;
+            foreach (byte num2 in bytes)
+                num1 = num1 * 256UL + (ulong)num2;
+            return num1;
+        }
 
-		// Token: 0x06000004 RID: 4 RVA: 0x00002161 File Offset: 0x00000361
-		public static T[] Concats<T>(this T[] array1, params T[] array2)
-		{
-			return BitUtil.ConcatArray<T>(new T[][]
-			{
-				array1,
-				array2
-			});
-		}
+        public static T[] Concats<T>(this T[] array1, params T[] array2) => BitUtil.ConcatArray<T>(array1, array2);
 
-		// Token: 0x06000005 RID: 5 RVA: 0x00002178 File Offset: 0x00000378
-		public static T[] ConcatArray<T>(params T[][] arrays)
-		{
-			int num;
-			for (int i = num = 0; i < arrays.Length; i++)
-			{
-				num += arrays[i].Length;
-			}
-			T[] array = new T[num];
-			for (int i = num = 0; i < arrays.Length; i++)
-			{
-				arrays[i].CopyTo(array, num);
-				num += arrays[i].Length;
-			}
-			return array;
-		}
+        public static T[] ConcatArray<T>(params T[][] arrays)
+        {
+            int index1;
+            int length;
+            for (length = index1 = 0; index1 < arrays.Length; ++index1)
+                length += arrays[index1].Length;
+            T[] objArray = new T[length];
+            int index2;
+            for (int index3 = index2 = 0; index2 < arrays.Length; ++index2)
+            {
+                arrays[index2].CopyTo((Array)objArray, index3);
+                index3 += arrays[index2].Length;
+            }
+            return objArray;
+        }
 
-		// Token: 0x06000006 RID: 6 RVA: 0x000021DC File Offset: 0x000003DC
-		public static byte LOBYTE(int a)
-		{
-			return (byte)((short)a & 0xFF);
-		}
+        public static byte LOBYTE(int a) => (byte)((uint)(short)a & (uint)byte.MaxValue);
 
-		// Token: 0x06000007 RID: 7 RVA: 0x000021F8 File Offset: 0x000003F8
-		public static short MAKEWORD(byte a, byte b)
-		{
-			return (short)((int)(a & byte.MaxValue) | (int)(b & byte.MaxValue) << 8);
-		}
+        public static short MAKEWORD(byte a, byte b) => (short)((int)(byte)((uint)a & (uint)byte.MaxValue) | (int)(byte)((uint)b & (uint)byte.MaxValue) << 8);
 
-		// Token: 0x06000008 RID: 8 RVA: 0x00002220 File Offset: 0x00000420
-		public static byte LOBYTE(short a)
-		{
-			return (byte)(a & 0xFF);
-		}
+        public static byte LOBYTE(short a) => (byte)((uint)a & (uint)byte.MaxValue);
 
-		// Token: 0x06000009 RID: 9 RVA: 0x0000223C File Offset: 0x0000043C
-		public static byte HIBYTE(short a)
-		{
-			return (byte)(a >> 8);
-		}
+        public static byte HIBYTE(short a) => (byte)((uint)a >> 8);
 
-		// Token: 0x0600000A RID: 10 RVA: 0x00002254 File Offset: 0x00000454
-		public static int MAKELONG(short a, short b)
-		{
-			return ((int)a & 0xFFFF) | ((int)b & 0xFFFF) << 0x10;
-		}
+        public static int MAKELONG(short a, short b) => (int)a & (int)ushort.MaxValue | ((int)b & (int)ushort.MaxValue) << 16;
 
-		// Token: 0x0600000B RID: 11 RVA: 0x00002278 File Offset: 0x00000478
-		public static short HIWORD(int a)
-		{
-			return (short)(a >> 0x10);
-		}
+        public static short HIWORD(int a) => (short)(a >> 16);
 
-		// Token: 0x0600000C RID: 12 RVA: 0x00002290 File Offset: 0x00000490
-		public static short LOWORD(int a)
-		{
-			return (short)(a & 0xFFFF);
-		}
+        public static short LOWORD(int a) => (short)(a & (int)ushort.MaxValue);
 
-		// Token: 0x0600000D RID: 13 RVA: 0x000022AC File Offset: 0x000004AC
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static uint RotateLeft(uint value, int offset)
-		{
-			return value << offset | value >> 0x20 - offset;
-		}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint RotateLeft(uint value, int offset) => value << offset | value >> 32 - offset;
 
-		// Token: 0x0600000E RID: 14 RVA: 0x000022D0 File Offset: 0x000004D0
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ulong RotateLeft64(ulong value, int offset)
-		{
-			return value << offset | value >> 0x40 - offset;
-		}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong RotateLeft64(ulong value, int offset) => value << offset | value >> 64 - offset;
 
-		// Token: 0x0600000F RID: 15 RVA: 0x000022F4 File Offset: 0x000004F4
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static uint RotateRight(uint value, int offset)
-		{
-			return value >> offset | value << 0x20 - offset;
-		}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint RotateRight(uint value, int offset) => value >> offset | value << 32 - offset;
 
-		// Token: 0x06000010 RID: 16 RVA: 0x00002318 File Offset: 0x00000518
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ulong RotateRight64(ulong value, int offset)
-		{
-			return value >> offset | value << 0x40 - offset;
-		}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong RotateRight64(ulong value, int offset) => value >> offset | value << 64 - offset;
 
-		// Token: 0x06000011 RID: 17 RVA: 0x0000233C File Offset: 0x0000053C
-		public static int HIDWORD(long intValue)
-		{
-			return Convert.ToInt32(intValue >> 0x20);
-		}
+        public static int HIDWORD(long intValue) => Convert.ToInt32(intValue >> 32);
 
-		// Token: 0x06000012 RID: 18 RVA: 0x00002358 File Offset: 0x00000558
-		public static int LODWORD(long intValue)
-		{
-			long num = intValue << 0x20;
-			return Convert.ToInt32(num >> 0x20);
-		}
+        public static int LODWORD(long intValue) => Convert.ToInt32(intValue << 32 >> 32);
 
-		// Token: 0x06000013 RID: 19 RVA: 0x00002378 File Offset: 0x00000578
-		public static short PAIR(sbyte high, sbyte low)
-		{
-			return (short)((int)high << 8 | (int)((byte)low));
-		}
+        public static short PAIR(sbyte high, sbyte low) => (short)((int)high << 8 | (int)(byte)low);
 
-		// Token: 0x06000014 RID: 20 RVA: 0x00002394 File Offset: 0x00000594
-		public static int PAIR(short high, int low)
-		{
-			return (int)high << 0x10 | (int)((ushort)low);
-		}
+        public static int PAIR(short high, int low) => (int)high << 16 | (int)(ushort)low;
 
-		// Token: 0x06000015 RID: 21 RVA: 0x000023B0 File Offset: 0x000005B0
-		public static long PAIR(int high, long low)
-		{
-			return (long)high << 0x20 | (long)((ulong)((uint)low));
-		}
+        public static long PAIR(int high, long low) => (long)high << 32 | (long)(uint)low;
 
-		// Token: 0x06000016 RID: 22 RVA: 0x000023CC File Offset: 0x000005CC
-		public static ushort PAIR(byte high, ushort low)
-		{
-			return (ushort)((int)high << 8 | (int)((byte)low));
-		}
+        public static ushort PAIR(byte high, ushort low) => (ushort)((uint)high << 8 | (uint)(byte)low);
 
-		// Token: 0x06000017 RID: 23 RVA: 0x000023E8 File Offset: 0x000005E8
-		public static uint PAIR(ushort high, uint low)
-		{
-			return (uint)((int)high << 0x10 | (int)((ushort)low));
-		}
+        public static uint PAIR(ushort high, uint low) => (uint)high << 16 | (uint)(ushort)low;
 
-		// Token: 0x06000018 RID: 24 RVA: 0x00002404 File Offset: 0x00000604
-		public static ulong PAIR(uint high, ulong low)
-		{
-			return (ulong)high << 0x20 | (ulong)((uint)low);
-		}
+        public static ulong PAIR(uint high, ulong low) => (ulong)high << 32 | (ulong)(uint)low;
 
-		// Token: 0x06000019 RID: 25 RVA: 0x00002420 File Offset: 0x00000620
-		public static int adc(uint first, uint second, ref uint carry)
-		{
-			uint num = 0U;
-			bool flag = carry == 0U;
-			int result;
-			if (flag)
-			{
-				uint num2 = first + second;
-				carry = ((num2 < first && num2 < second) ? 1U : 0U);
-				result = (int)num2;
-			}
-			else
-			{
-				uint num2 = (uint)BitUtil.adc(first, second, ref num);
-				bool flag2 = carry > 0U;
-				if (flag2)
-				{
-					num2 += 1U;
-					num |= ((num2 == 0U) ? 1U : 0U);
-				}
-				carry = num;
-				result = (int)num2;
-			}
-			return result;
-		}
-	}
+        public static int adc(uint first, uint second, ref uint carry)
+        {
+            uint carry1 = 0;
+            if (carry == 0U)
+            {
+                uint num = first + second;
+                carry = num >= first || num >= second ? 0U : 1U;
+                return (int)num;
+            }
+            uint num1 = (uint)BitUtil.adc(first, second, ref carry1);
+            if (carry > 0U)
+            {
+                ++num1;
+                carry1 |= num1 == 0U ? 1U : 0U;
+            }
+            carry = carry1;
+            return (int)num1;
+        }
+    }
 }

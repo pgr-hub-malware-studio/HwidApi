@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Decompiled with JetBrains decompiler
+// Type: HwidGetCurrentEx.HWID
+// Assembly: HwidGetCurrentEx, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 200C1AD7-2186-49E5-9EB2-5AB7013ECA80 Assembly location: D:\downloads\Programs\HwidGetCurrentEx.dll
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,1433 +12,1106 @@ using System.Text;
 
 namespace HwidGetCurrentEx
 {
-	// Token: 0x02000009 RID: 9
-	public static class HWID
-	{
-		// Token: 0x06000049 RID: 73 RVA: 0x00002754 File Offset: 0x00000954
-		public static string HwidCreateBlock(byte[] arrayHWID, int cbsize)
-		{
-			byte[] array = new byte[]
-			{
-				0,
-				2,
-				0,
-				1,
-				1,
-				0,
-				2,
-				5,
-				0,
-				3,
-				1,
-				0,
-				4,
-				2,
-				0,
-				6,
-				1,
-				0,
-				8,
-				7,
-				0,
-				9,
-				3,
-				0,
-				0xA,
-				1,
-				0,
-				0xC,
-				7,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0,
-				0
-			};
-			int num = cbsize + 6 + 0x25;
-			byte[] array2 = new byte[num];
-			array2[0] = (byte)num;
-			array2[4] = 0x13;
-			Buffer.BlockCopy(arrayHWID, 0, array2, 6, cbsize);
-			array2[cbsize + 6] = 0xC;
-			Buffer.BlockCopy(array, 0, array2, cbsize + 6 + 1, array.Length);
-			return Convert.ToBase64String(array2);
-		}
+    public static class HWID
+    {
+        private static byte[] signByte = new byte[14]
+        {
+      (byte) 0,
+      (byte) 14,
+      (byte) 1,
+      (byte) 2,
+      (byte) 3,
+      (byte) 4,
+      (byte) 15,
+      (byte) 5,
+      (byte) 6,
+      (byte) 7,
+      (byte) 8,
+      (byte) 9,
+      (byte) 10,
+      (byte) 12
+        };
 
-		// Token: 0x0600004A RID: 74 RVA: 0x000027BC File Offset: 0x000009BC
-		public static byte[] HwidGetCurrentEx()
-		{
-			int num = 0;
-			int num2 = 0;
-			int num3 = 0;
-			byte[] array = new byte[0x118];
-			List<ushort> list = new List<ushort>();
-			int i = 0;
-			while (i < HWID.signByte.Length)
-			{
-				byte b = HWID.signByte[i];
-				bool flag = b == 0;
-				if (flag)
-				{
-					list = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVINTERFACE_CDROM, false);
-					num2 = 0;
-					goto IL_1FB;
-				}
-				bool flag2 = b == 0xE;
-				if (flag2)
-				{
-					list = HWID.CollectWwan();
-					num2 = 0;
-					goto IL_1FB;
-				}
-				bool flag3 = b == 1;
-				if (flag3)
-				{
-					list = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_HDC, false);
-					num2 = 1;
-					goto IL_1FB;
-				}
-				bool flag4 = b == 2;
-				if (flag4)
-				{
-					list = HWID.EnumInterfaces(ref GUID_DEVINTERFACE.GUID_DEVINTERFACE_DISK, 0x2D1400U);
-					num2 = 2;
-					goto IL_1FB;
-				}
-				bool flag5 = b == 3;
-				if (flag5)
-				{
-					list = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_DISPLAY, false);
-					num2 = 3;
-					goto IL_1FB;
-				}
-				bool flag6 = b == 4;
-				if (flag6)
-				{
-					list = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_SCSIADAPTER, false);
-					num2 = 4;
-					goto IL_1FB;
-				}
-				bool flag7 = b == 0xF;
-				if (flag7)
-				{
-					list = HWID.EnumInterfaces(ref GUID_DEVINTERFACE.GUID_BTHPORT_DEVICE_INTERFACE, 0x410000U);
-					num2 = 4;
-					goto IL_1FB;
-				}
-				bool flag8 = b == 5;
-				if (flag8)
-				{
-					list = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_PCMCIA, false);
-					num2 = -1;
-					goto IL_1FB;
-				}
-				bool flag9 = b == 6;
-				if (flag9)
-				{
-					list = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_6994ad04_93ef_11d0_a3cc_00a0c9223196, true);
-					num2 = 5;
-					goto IL_1FB;
-				}
-				bool flag10 = b == 7;
-				if (flag10)
-				{
-					list = HWID.CollectHWProfile();
-					array[0x16] = 1;
-				}
-				else
-				{
-					bool flag11 = b == 8;
-					if (flag11)
-					{
-						list = HWID.EnumInterfaces(ref GUID_DEVINTERFACE.GUID_NDIS_LAN_CLASS, 0x170002U);
-						num2 = 7;
-						goto IL_1FB;
-					}
-					bool flag12 = b == 9;
-					if (flag12)
-					{
-						list = HWID.CollectCPU();
-						num2 = 8;
-						goto IL_1FB;
-					}
-					bool flag13 = b == 0xA;
-					if (flag13)
-					{
-						list = HWID.CollectMemory();
-						num2 = -2;
-						num3 -= list.Count;
-						num = -2;
-						goto IL_1FB;
-					}
-					bool flag14 = b == 0xC;
-					if (flag14)
-					{
-						list = HWID.CollectBIOS();
-						num2 = -1;
-						num3 -= list.Count;
-						num = -1;
-						goto IL_1FB;
-					}
-					goto IL_1FB;
-				}
-				IL_2C2:
-				i++;
-				continue;
-				IL_1FB:
-				bool flag15 = list.Count > 0;
-				if (flag15)
-				{
-					bool flag16 = num2 >= 0;
-					if (flag16)
-					{
-						int num4 = num2 * 2 + 4;
-						byte[] array2 = array;
-						int num5 = num4;
-						array2[num5] += (byte)(list.Count & 0xFF);
-					}
-					list.Sort();
-					for (int j = 0; j < list.Count; j++)
-					{
-						int num6 = (num + 0xE) * 2;
-						byte[] bytes = BitConverter.GetBytes(list[j]);
-						array[num6 + 1] = bytes[1];
-						array[num6] = bytes[0];
-						num3++;
-						num++;
-					}
-				}
-				else
-				{
-					int num7 = num2 * 2 + 4;
-					byte[] array3 = array;
-					int num8 = num7 + 1;
-					array3[num8] += (byte)(list.Count & 0xFF);
-				}
-				goto IL_2C2;
-			}
-			array[0] = (byte)(num3 * 2 + 0x1C);
-			Debug.Print(array[0].ToString() + Environment.NewLine + BitConverter.ToString(array.Take((int)array[0]).ToArray<byte>()).Replace("-", " "));
-			return array.Take((int)array[0]).ToArray<byte>();
-		}
+        private static uint[] SHA256Magic = new uint[64]
+        {
+      1116352408U,
+      1899447441U,
+      3049323471U,
+      3921009573U,
+      961987163U,
+      1508970993U,
+      2453635748U,
+      2870763221U,
+      3624381080U,
+      310598401U,
+      607225278U,
+      1426881987U,
+      1925078388U,
+      2162078206U,
+      2614888103U,
+      3248222580U,
+      3835390401U,
+      4022224774U,
+      264347078U,
+      604807628U,
+      770255983U,
+      1249150122U,
+      1555081692U,
+      1996064986U,
+      2554220882U,
+      2821834349U,
+      2952996808U,
+      3210313671U,
+      3336571891U,
+      3584528711U,
+      113926993U,
+      338241895U,
+      666307205U,
+      773529912U,
+      1294757372U,
+      1396182291U,
+      1695183700U,
+      1986661051U,
+      2177026350U,
+      2456956037U,
+      2730485921U,
+      2820302411U,
+      3259730800U,
+      3345764771U,
+      3516065817U,
+      3600352804U,
+      4094571909U,
+      275423344U,
+      430227734U,
+      506948616U,
+      659060556U,
+      883997877U,
+      958139571U,
+      1322822218U,
+      1537002063U,
+      1747873779U,
+      1955562222U,
+      2024104815U,
+      2227730452U,
+      2361852424U,
+      2428436474U,
+      2756734187U,
+      3204031479U,
+      3329325298U
+        };
 
-		// Token: 0x0600004B RID: 75 RVA: 0x00002B04 File Offset: 0x00000D04
-		private static List<ushort> CollectWwan()
-		{
-			List<ushort> list = new List<ushort>();
-			IntPtr zero = IntPtr.Zero;
-			int dwClientVersion = 1;
-			int num = 0;
-			int num2 = 5;
-			int num3 = 0;
-			Native.WWAN_INTERFACE_INFO_LIST wwan_INTERFACE_INFO_LIST = default(Native.WWAN_INTERFACE_INFO_LIST);
-			try
-			{
-				int num4 = Native.WwanOpenHandle(dwClientVersion, IntPtr.Zero, out num, out zero);
-				bool flag = num4 != 0;
-				if (flag)
-				{
-					bool flag7;
-					do
-					{
-						num4 = Native.WwanEnumerateInterfaces(zero, 0, out wwan_INTERFACE_INFO_LIST);
-						bool flag2 = num4 != 0;
-						if (flag2)
-						{
-							break;
-						}
-						num3++;
-						bool flag3 = num3 > num2;
-						if (flag3)
-						{
-							break;
-						}
-						bool flag4 = false;
-						for (int i = 0; i < wwan_INTERFACE_INFO_LIST.dwNumberOfItems; i++)
-						{
-							Native.WWAN_INTERFACE_INFO wwan_INTERFACE_INFO = wwan_INTERFACE_INFO_LIST.InterfaceInfo[i];
-							int num5;
-							IntPtr intPtr;
-							int num6;
-							num4 = Native.WlanQueryInterface(zero, wwan_INTERFACE_INFO.InterfaceGuid, 7, IntPtr.Zero, out num5, out intPtr, out num6);
-							bool flag5 = num4 != 0;
-							if (flag5)
-							{
-								byte[] array = new byte[0x24];
-								Marshal.Copy(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + 0x28C)) : (intPtr.ToInt64() + 0x28CL)), array, 0, array.Length);
-								ushort item = HWID.AddInstanceHash(array, 0x24U, true);
-								bool flag6 = !list.Contains(item);
-								if (flag6)
-								{
-									list.Add(item);
-								}
-							}
-						}
-						flag7 = flag4;
-					}
-					while (!flag7);
-				}
-				bool flag8 = zero != IntPtr.Zero;
-				if (flag8)
-				{
-					Native.WwanCloseHandle(zero, IntPtr.Zero);
-				}
-			}
-			catch
-			{
-			}
-			return list;
-		}
+        private static uint[] MemoryMagic = new uint[15]
+        {
+      0U,
+      268435456U,
+      0U,
+      536870912U,
+      0U,
+      1073741824U,
+      0U,
+      1610612736U,
+      0U,
+      2147483648U,
+      0U,
+      3221225472U,
+      0U,
+      1073741824U,
+      0U
+        };
 
-		// Token: 0x0600004C RID: 76 RVA: 0x00002CB8 File Offset: 0x00000EB8
-		private static List<ushort> CollectHWProfile()
-		{
-			List<ushort> list = new List<ushort>();
-			IntPtr intPtr = Marshal.AllocHGlobal(0x7B);
-			Native.HWProfile hwprofile = new Native.HWProfile();
-			Marshal.StructureToPtr<Native.HWProfile>(hwprofile, intPtr, false);
-			bool currentHwProfile = Native.GetCurrentHwProfile(intPtr);
-			if (currentHwProfile)
-			{
-				Marshal.PtrToStructure<Native.HWProfile>(intPtr, hwprofile);
-			}
-			else
-			{
-				hwprofile.dwDockInfo = 1;
-			}
-			bool flag = (hwprofile.dwDockInfo & 4) == 0;
-			if (flag)
-			{
-				int num = hwprofile.dwDockInfo & 3;
-				bool flag2 = num != 3;
-				if (flag2)
-				{
-					byte[] bytes = BitConverter.GetBytes(hwprofile.dwDockInfo);
-					ushort item = HWID.AddInstanceHash(bytes, 4U, false);
-					bool flag3 = !list.Contains(item);
-					if (flag3)
-					{
-						list.Add(item);
-					}
-				}
-			}
-			Marshal.FreeHGlobal(intPtr);
-			return list;
-		}
+        public static string HwidCreateBlock(byte[] arrayHWID, int cbsize)
+        {
+            byte[] src = new byte[36]
+            {
+        (byte) 0,
+        (byte) 2,
+        (byte) 0,
+        (byte) 1,
+        (byte) 1,
+        (byte) 0,
+        (byte) 2,
+        (byte) 5,
+        (byte) 0,
+        (byte) 3,
+        (byte) 1,
+        (byte) 0,
+        (byte) 4,
+        (byte) 2,
+        (byte) 0,
+        (byte) 6,
+        (byte) 1,
+        (byte) 0,
+        (byte) 8,
+        (byte) 7,
+        (byte) 0,
+        (byte) 9,
+        (byte) 3,
+        (byte) 0,
+        (byte) 10,
+        (byte) 1,
+        (byte) 0,
+        (byte) 12,
+        (byte) 7,
+        (byte) 0,
+        (byte) 0,
+        (byte) 0,
+        (byte) 0,
+        (byte) 0,
+        (byte) 0,
+        (byte) 0
+            };
+            int length = cbsize + 6 + 37;
+            byte[] numArray = new byte[length];
+            numArray[0] = (byte)length;
+            numArray[4] = (byte)19;
+            Buffer.BlockCopy((Array)arrayHWID, 0, (Array)numArray, 6, cbsize);
+            numArray[cbsize + 6] = (byte)12;
+            Buffer.BlockCopy((Array)src, 0, (Array)numArray, cbsize + 6 + 1, src.Length);
+            return Convert.ToBase64String(numArray);
+        }
 
-		// Token: 0x0600004D RID: 77 RVA: 0x00002D70 File Offset: 0x00000F70
-		private static List<ushort> CollectCPU()
-		{
-			List<ushort> list = new List<ushort>();
-			byte[] array = new byte[0];
-			byte[] source = CPUID.Invoke(0);
-			byte[] value = CPUID.Invoke(1);
-			int value2 = (int)(BitConverter.ToUInt32(value, 0) & 0xFFFFFFF0U);
-			int value3 = (int)(BitConverter.ToUInt32(value, 4) & 0xFFFFFFU);
-			array = array.Concat(source.Skip(4).Take(4).ToArray<byte>()).Concat(source.Skip(0xC).Take(4).ToArray<byte>()).Concat(source.Skip(8).Take(4).ToArray<byte>()).Concat(BitConverter.GetBytes(value2)).Concat(BitConverter.GetBytes(value3)).ToArray<byte>();
-			ushort item = HWID.AddInstanceHash(array, 0x14U, true);
-			bool flag = !list.Contains(item);
-			if (flag)
-			{
-				list.Add(item);
-			}
-			return list;
-		}
-
-		// Token: 0x0600004E RID: 78 RVA: 0x00002E48 File Offset: 0x00001048
-		private static List<ushort> CollectMemory()
-		{
-			List<ushort> list = new List<ushort>();
-			Native.MEMORYSTATUSEX memorystatusex = default(Native.MEMORYSTATUSEX);
-			memorystatusex.dwLength = (uint)Marshal.SizeOf(typeof(Native.MEMORYSTATUSEX));
-			Native.GlobalMemoryStatusEx(ref memorystatusex);
-			byte[] bytes = BitConverter.GetBytes(memorystatusex.ullTotalPhys);
-			int num = BitConverter.ToInt32(bytes, 0);
-			int num2 = BitConverter.ToInt32(bytes, 4);
-			int num3 = (int)(BitUtil.PAIR(num2, (long)num) >> 0xA);
-			int num4 = num2 >> 0xA;
-			uint num5 = 0U;
-			bool flag = !HWID.GetInstalledMemorySize(ref num5);
-			if (flag)
-			{
-				num5 = 0U;
-			}
-			bool flag2 = (ulong)num5 < (ulong)((long)num3);
-			if (flag2)
-			{
-				num5 = (uint)num3;
-			}
-			uint num6 = (uint)(BitUtil.PAIR(0U, (ulong)num5) >> 0x16);
-			uint num7 = num5 << 0xA;
-			int num8 = 0;
-			do
-			{
-				bool flag3 = num6 < HWID.MemoryMagic[2 * num8] || (num6 <= HWID.MemoryMagic[2 * num8] && num7 <= HWID.MemoryMagic[2 * num8]);
-				if (flag3)
-				{
-					break;
-				}
-				num8++;
-			}
-			while (num8 < 8);
-			bool flag4 = num8 == 8;
-			int value;
-			if (flag4)
-			{
-				ulong numLong;
-                unchecked
+        public static byte[] HwidGetCurrentEx()
+        {
+            int num1 = 0;
+            int num2 = 0;
+            int num3 = 0;
+            byte[] source = new byte[280];
+            List<ushort> ushortList = new List<ushort>();
+            for (int index1 = 0; index1 < HWID.signByte.Length; ++index1)
+            {
+                switch (HWID.signByte[index1])
                 {
-					numLong = (ulong)-0x40000000;
+                    case 0:
+                        ushortList = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVINTERFACE_CDROM, false);
+                        num2 = 0;
+                        goto default;
+                    case 1:
+                        ushortList = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_HDC, false);
+                        num2 = 1;
+                        goto default;
+                    case 2:
+                        ushortList = HWID.EnumInterfaces(ref GUID_DEVINTERFACE.GUID_DEVINTERFACE_DISK, 2954240U);
+                        num2 = 2;
+                        goto default;
+                    case 3:
+                        ushortList = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_DISPLAY, false);
+                        num2 = 3;
+                        goto default;
+                    case 4:
+                        ushortList = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_SCSIADAPTER, false);
+                        num2 = 4;
+                        goto default;
+                    case 5:
+                        ushortList = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_DEVCLASS_PCMCIA, false);
+                        num2 = -1;
+                        goto default;
+                    case 6:
+                        ushortList = HWID.CollectInternal(ref GUID_DEVINTERFACE.GUID_6994ad04_93ef_11d0_a3cc_00a0c9223196, true);
+                        num2 = 5;
+                        goto default;
+                    case 7:
+                        ushortList = HWID.CollectHWProfile();
+                        source[22] = (byte)1;
+                        break;
 
-				}
-				value = 8 * (int)(BitUtil.PAIR(num6, (ulong)num7) - numLong >> 0x1E) + 7;
-			}
-			else
-			{
-				value = num8;
-			}
-			byte[] bytes2 = BitConverter.GetBytes(value);
-			ushort item = HWID.AddInstanceHash(bytes2, 4U, true);
-			bool flag5 = !list.Contains(item);
-			if (flag5)
-			{
-				list.Add(item);
-			}
-			return list;
-		}
+                    case 8:
+                        ushortList = HWID.EnumInterfaces(ref GUID_DEVINTERFACE.GUID_NDIS_LAN_CLASS, 1507330U);
+                        num2 = 7;
+                        goto default;
+                    case 9:
+                        ushortList = HWID.CollectCPU();
+                        num2 = 8;
+                        goto default;
+                    case 10:
+                        ushortList = HWID.CollectMemory();
+                        num2 = -2;
+                        num3 -= ushortList.Count;
+                        num1 = -2;
+                        goto default;
+                    case 12:
+                        ushortList = HWID.CollectBIOS();
+                        num2 = -1;
+                        num3 -= ushortList.Count;
+                        num1 = -1;
+                        goto default;
+                    case 14:
+                        ushortList = HWID.CollectWwan();
+                        num2 = 0;
+                        goto default;
+                    case 15:
+                        ushortList = HWID.EnumInterfaces(ref GUID_DEVINTERFACE.GUID_BTHPORT_DEVICE_INTERFACE, 4259840U);
+                        num2 = 4;
+                        goto default;
+                    default:
+                        if (ushortList.Count > 0)
+                        {
+                            if (num2 >= 0)
+                            {
+                                int index2 = num2 * 2 + 4;
+                                source[index2] += (byte)(ushortList.Count & (int)byte.MaxValue);
+                            }
+                            ushortList.Sort();
+                            for (int index3 = 0; index3 < ushortList.Count; ++index3)
+                            {
+                                int index4 = (num1 + 14) * 2;
+                                byte[] bytes = BitConverter.GetBytes(ushortList[index3]);
+                                source[index4 + 1] = bytes[1];
+                                source[index4] = bytes[0];
+                                ++num3;
+                                ++num1;
+                            }
+                        }
+                        else
+                        {
+                            int num4 = num2 * 2 + 4;
+                            source[num4 + 1] += (byte)(ushortList.Count & (int)byte.MaxValue);
+                        }
+                        break;
+                }
+            }
+            source[0] = (byte)(num3 * 2 + 28);
+            Debug.Print(source[0].ToString() + Environment.NewLine + BitConverter.ToString(((IEnumerable<byte>)source).Take<byte>((int)source[0]).ToArray<byte>()).Replace("-", " "));
+            return ((IEnumerable<byte>)source).Take<byte>((int)source[0]).ToArray<byte>();
+        }
 
-		// Token: 0x0600004F RID: 79 RVA: 0x00002FB0 File Offset: 0x000011B0
-		private static int GetProductName(ref List<string> productList, ref IntPtr buffer, ref int position)
-		{
-			do
-			{
-				string text = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(buffer.ToInt32() + position)) : (buffer.ToInt64() + (long)position)));
-				bool flag = !string.IsNullOrEmpty(text);
-				if (flag)
-				{
-					productList.Add(text);
-				}
-				position += text.Length + 1;
-			}
-			while (Marshal.ReadByte(buffer, position) > 0);
-			position++;
-			return position;
-		}
-
-		// Token: 0x06000050 RID: 80 RVA: 0x00003028 File Offset: 0x00001228
-		private static List<ushort> CollectBIOS()
-		{
-			List<ushort> list = new List<ushort>();
-			List<string> list2 = new List<string>();
-			uint systemFirmwareTable = Native.GetSystemFirmwareTable(0x52534D42U, 0U, IntPtr.Zero, 0U);
-			IntPtr intPtr = Marshal.AllocHGlobal((int)systemFirmwareTable);
-			systemFirmwareTable = Native.GetSystemFirmwareTable(0x52534D42U, 0U, intPtr, systemFirmwareTable);
-			int num = 8;
-			SMBIOS.BIOSInformation biosinformation = (SMBIOS.BIOSInformation)Marshal.PtrToStructure(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)), typeof(SMBIOS.BIOSInformation));
-			num += (int)biosinformation.header.length;
-			string text = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text.Length + 1;
-			string text2 = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text2.Length + 1;
-			string text3 = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text3.Length + 1;
-			num++;
-			int num2 = num + 8;
-			SMBIOS.SMBIOSTableSystemInfo smbiostableSystemInfo = (SMBIOS.SMBIOSTableSystemInfo)Marshal.PtrToStructure(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)), typeof(SMBIOS.SMBIOSTableSystemInfo));
-			num += (int)smbiostableSystemInfo.header.length;
-			string text4 = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text4.Length + 1;
-			string text5 = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text5.Length + 1;
-			string text6 = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text6.Length + 1;
-			string text7 = Marshal.PtrToStringAnsi(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)));
-			num += text7.Length + 1;
-			byte[] array = new byte[0x10];
-			Marshal.Copy(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num2)) : (intPtr.ToInt64() + (long)num2)), array, 0, array.Length);
-			byte[] array2 = new byte[0];
-			bool flag = text5 == "None";
-			if (flag)
-			{
-				array2 = array.Concat(Encoding.UTF8.GetBytes(text4)).Concat(Encoding.UTF8.GetBytes(text7)).Concat(Encoding.UTF8.GetBytes(text6)).Concat(Encoding.UTF8.GetBytes(text)).ToArray<byte>();
-			}
-			else
-			{
-				array2 = array.Concat(Encoding.UTF8.GetBytes(text4)).Concat(Encoding.UTF8.GetBytes(text5)).Concat(Encoding.UTF8.GetBytes(text7)).Concat(Encoding.UTF8.GetBytes(text)).ToArray<byte>();
-			}
-			ushort item = HWID.AddInstanceHash(array2, (uint)array2.Length, true);
-			bool flag2 = !list.Contains(item);
-			if (flag2)
-			{
-				list.Add(item);
-			}
-			Marshal.FreeHGlobal(intPtr);
-			return list;
-		}
-
-		// Token: 0x06000051 RID: 81 RVA: 0x000033D4 File Offset: 0x000015D4
-		private static bool GetInstalledMemorySize(ref uint InstalledMemorySize)
-		{
-			List<string> list = new List<string>();
-			uint systemFirmwareTable = Native.GetSystemFirmwareTable(0x52534D42U, 0U, IntPtr.Zero, 0U);
-			IntPtr intPtr = Marshal.AllocHGlobal((int)systemFirmwareTable);
-			systemFirmwareTable = Native.GetSystemFirmwareTable(0x52534D42U, 0U, intPtr, systemFirmwareTable);
-			bool flag = systemFirmwareTable > 0U;
-			if (flag)
-			{
-				int num = 8;
-				byte b = Marshal.ReadByte(intPtr, num);
-				while ((long)(num + 4) < (long)((ulong)systemFirmwareTable) && b != 0x7F)
-				{
-					byte b2 = b;
-					byte b3 = b2;
-					if (b3 != 0x11)
-					{
-						int num2 = (int)Marshal.ReadByte(intPtr, num + 1);
-						num += num2;
-						num = HWID.GetProductName(ref list, ref intPtr, ref num);
-						b = Marshal.ReadByte(intPtr, num);
-					}
-					else
-					{
-						SMBIOS.MemoryDevice memoryDevice = (SMBIOS.MemoryDevice)Marshal.PtrToStructure(new IntPtr((IntPtr.Size == 4) ? ((long)(intPtr.ToInt32() + num)) : (intPtr.ToInt64() + (long)num)), typeof(SMBIOS.MemoryDevice));
-						bool flag2 = memoryDevice.Size == 0;
-						if (flag2)
-						{
-							return false;
-						}
-						InstalledMemorySize += (uint)((uint)memoryDevice.Size << 0xA);
-						num += (int)memoryDevice.header.length;
-						num = HWID.GetProductName(ref list, ref intPtr, ref num);
-						b = Marshal.ReadByte(intPtr, num);
-					}
-				}
-			}
-			return true;
-		}
-
-		// Token: 0x06000052 RID: 82 RVA: 0x00003520 File Offset: 0x00001720
-		private static bool HwidGetPnPDeviceRegistryProperty(IntPtr hDevInfo, Native.SP_DEVINFO_DATA devData, ref int cbsize, ref byte[] buffer)
-		{
-			int num = 0;
-			bool flag = !Native.SetupDiGetDeviceRegistryPropertyW(hDevInfo, ref devData, 8, 0, null, 0, out num);
-			if (flag)
-			{
-				int lastWin32Error = Marshal.GetLastWin32Error();
-				bool flag2 = lastWin32Error == 0xD;
-				if (flag2)
-				{
-					return false;
-				}
-				bool flag3 = lastWin32Error != 0x7A;
-				if (flag3)
-				{
-					return false;
-				}
-				buffer = new byte[num];
-				bool flag4 = Native.SetupDiGetDeviceRegistryPropertyW(hDevInfo, ref devData, 8, 0, buffer, num, out num);
-				if (flag4)
-				{
-					cbsize = num;
-					return true;
-				}
-			}
-			return false;
-		}
-
-		// Token: 0x06000053 RID: 83 RVA: 0x000035A0 File Offset: 0x000017A0
-		private static bool HwidGetPnPRemovalPolicy(IntPtr hDevInfo, Native.SP_DEVINFO_DATA devData)
-		{
-			int num = 0;
-			byte[] array = new byte[4];
-			bool flag = Native.SetupDiGetDeviceRegistryPropertyW(hDevInfo, ref devData, 0x1F, 0, array, 4, out num);
-			bool flag2 = flag;
-			if (flag2)
-			{
-				bool flag3 = BitConverter.ToInt32(array, 0) != 1;
-				if (flag3)
-				{
-					return BitConverter.ToInt32(array, 0) - 2 > 3;
-				}
-			}
-			return true;
-		}
-
-		// Token: 0x06000054 RID: 84 RVA: 0x000035F8 File Offset: 0x000017F8
-		public static ushort EnumInterfaceCallback(IntPtr hFile)
-		{
-			ushort result = 0;
-			IntPtr lpOutBuffer = Marshal.AllocHGlobal(0x124);
-			uint num;
-			bool flag = Native.DeviceIoControl(hFile, 0x410000U, IntPtr.Zero, 0, lpOutBuffer, 0x124, out num, IntPtr.Zero);
-			bool flag2 = !flag;
-			if (flag2)
-			{
-				int lastWin32Error = Marshal.GetLastWin32Error();
-			}
-			bool flag3 = num == 0x124U;
-			if (flag3)
-			{
-				byte[] array = new byte[6];
-				Marshal.Copy(new IntPtr((IntPtr.Size == 4) ? ((long)(lpOutBuffer.ToInt32() + 8)) : (lpOutBuffer.ToInt64() + 8L)), array, 0, array.Length);
-				string s = BitConverter.ToString(array.Reverse<byte>().ToArray<byte>()).Replace("-", "").ToLower();
-				byte[] buffer = Encoding.Unicode.GetBytes(s).Concat(new byte[2]).ToArray<byte>();
-				result = HWID.AddInstanceHash(buffer, 0x1AU, true);
-			}
-			return result;
-		}
-
-		// Token: 0x06000055 RID: 85 RVA: 0x000036E8 File Offset: 0x000018E8
-		public static bool NextInterface(IntPtr hDevInfo, ref Guid ClassGuid, ref Native.SP_DEVICE_INTERFACE_DETAIL_DATA devDetail, ref Native.SP_DEVINFO_DATA deviceInfoData, ref uint index)
-		{
-			uint num = 0U;
-			Native.SP_DEVICE_INTERFACE_DATA structure = default(Native.SP_DEVICE_INTERFACE_DATA);
-			structure.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVICE_INTERFACE_DATA>(structure);
-			bool flag = Native.SetupDiEnumDeviceInterfaces(hDevInfo, IntPtr.Zero, ref ClassGuid, index, ref structure);
-			bool flag2 = flag;
-			bool result;
-			if (flag2)
-			{
-				Native.SetupDiGetDeviceInterfaceDetailW(hDevInfo, ref structure, IntPtr.Zero, 0U, out num, IntPtr.Zero);
-				bool flag3 = num > 6U;
-				if (flag3)
-				{
-					Native.SP_DEVICE_INTERFACE_DETAIL_DATA sp_DEVICE_INTERFACE_DETAIL_DATA = default(Native.SP_DEVICE_INTERFACE_DETAIL_DATA);
-					bool flag4 = IntPtr.Size == 8;
-					if (flag4)
-					{
-						sp_DEVICE_INTERFACE_DETAIL_DATA.cbSize = 8;
-					}
-					else
-					{
-						sp_DEVICE_INTERFACE_DETAIL_DATA.cbSize = 4 + Marshal.SystemDefaultCharSize;
-					}
-					Native.SP_DEVINFO_DATA sp_DEVINFO_DATA = default(Native.SP_DEVINFO_DATA);
-					sp_DEVINFO_DATA.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVINFO_DATA>(sp_DEVINFO_DATA);
-					bool flag5 = Native.SetupDiGetDeviceInterfaceDetailW(hDevInfo, ref structure, ref sp_DEVICE_INTERFACE_DETAIL_DATA, num, out num, ref sp_DEVINFO_DATA);
-					if (flag5)
-					{
-						devDetail = sp_DEVICE_INTERFACE_DETAIL_DATA;
-						deviceInfoData = sp_DEVINFO_DATA;
-					}
-				}
-				result = true;
-			}
-			else
-			{
-				result = false;
-			}
-			return result;
-		}
-
-		// Token: 0x06000056 RID: 86 RVA: 0x000037C4 File Offset: 0x000019C4
-		public static bool NextInterfaceDeviceHandle(IntPtr hDevInfo, ref Guid ClassGuid, ref bool readable, ref uint index, ref IntPtr hFile)
-		{
-			Native.SP_DEVICE_INTERFACE_DETAIL_DATA sp_DEVICE_INTERFACE_DETAIL_DATA = default(Native.SP_DEVICE_INTERFACE_DETAIL_DATA);
-			Native.SP_DEVINFO_DATA sp_DEVINFO_DATA = default(Native.SP_DEVINFO_DATA);
-			for (;;)
-			{
-				sp_DEVICE_INTERFACE_DETAIL_DATA = default(Native.SP_DEVICE_INTERFACE_DETAIL_DATA);
-				sp_DEVINFO_DATA = default(Native.SP_DEVINFO_DATA);
-				bool flag = HWID.NextInterface(hDevInfo, ref ClassGuid, ref sp_DEVICE_INTERFACE_DETAIL_DATA, ref sp_DEVINFO_DATA, ref index);
-				if (!flag)
-				{
-					break;
-				}
-				index += 1U;
-				bool flag2 = sp_DEVINFO_DATA.cbSize >= 0U;
-				if (flag2)
-				{
-					bool flag3 = HWID.IsSoftwareDevice(new IntPtr((long)((ulong)sp_DEVINFO_DATA.DevInst)));
-					bool flag4 = !flag3;
-					if (flag4)
-					{
-						hFile = Native.CreateFileW(sp_DEVICE_INTERFACE_DETAIL_DATA.DevicePath, 0U, 3U, 0U, 3U, 0U, 0U);
-					}
-				}
-				if (!(hFile == IntPtr.Zero) && hFile.ToInt32() != -1)
-				{
-					goto Block_5;
-				}
-			}
-			return false;
-			Block_5:
-			bool flag5 = hFile != IntPtr.Zero && hFile.ToInt32() != -1;
-			if (flag5)
-			{
-				readable = HWID.HwidGetPnPRemovalPolicy(hDevInfo, sp_DEVINFO_DATA);
-				bool flag6 = !readable;
-				if (flag6)
-				{
-				}
-			}
-			else
-			{
-				hDevInfo = IntPtr.Zero;
-			}
-			return true;
-		}
-
-		// Token: 0x06000057 RID: 87 RVA: 0x000038D0 File Offset: 0x00001AD0
-		private static List<ushort> EnumInterfaces(ref Guid ClassGuid, uint dwIoControlCode)
-		{
-			uint num = 0U;
-			bool flag = false;
-			IntPtr zero = IntPtr.Zero;
-			List<ushort> list = new List<ushort>();
-			try
-			{
-				IntPtr intPtr = Native.SetupDiGetClassDevsW(ref ClassGuid, null, IntPtr.Zero, 0x12);
-				bool flag2 = intPtr != IntPtr.Zero;
-				if (flag2)
-				{
-					ushort num7;
-					for (;;)
-					{
-						bool flag3 = zero != IntPtr.Zero && zero.ToInt32() != -1;
-						if (flag3)
-						{
-							try
-							{
-								Native.CloseHandle(zero);
-								zero = IntPtr.Zero;
-							}
-							catch (Exception ex)
-							{
-								Debug.Print(ex.ToString());
-								zero = IntPtr.Zero;
-							}
-						}
-						Native.SP_DEVICE_INTERFACE_DATA structure = default(Native.SP_DEVICE_INTERFACE_DATA);
-						structure.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVICE_INTERFACE_DATA>(structure);
-						bool flag4 = HWID.NextInterfaceDeviceHandle(intPtr, ref ClassGuid, ref flag, ref num, ref zero);
-						if (!flag4)
-						{
-							goto IL_456;
-						}
-						bool flag5 = zero != IntPtr.Zero && zero.ToInt32() != -1;
-						if (flag5)
-						{
-							bool flag6 = dwIoControlCode == 0x2D1400U;
-							if (flag6)
-							{
-								bool flag7 = flag;
-								if (flag7)
-								{
-									IntPtr intPtr2 = Marshal.AllocHGlobal(0x400);
-									uint num2 = 0U;
-									uint num3 = 0U;
-									bool flag8 = Native.DeviceIoControl(zero, 0x2D1400U, ref num3, 0xC, intPtr2, 0x400, out num2, IntPtr.Zero);
-									bool flag9 = !flag8;
-									if (flag9)
-									{
-										int lastWin32Error = Marshal.GetLastWin32Error();
-									}
-									Native.STORAGE_DEVICE_DESCRIPTOR storage_DEVICE_DESCRIPTOR = (Native.STORAGE_DEVICE_DESCRIPTOR)Marshal.PtrToStructure(intPtr2, typeof(Native.STORAGE_DEVICE_DESCRIPTOR));
-									int num4 = Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(storage_DEVICE_DESCRIPTOR);
-									int num5 = (int)(storage_DEVICE_DESCRIPTOR.Size - (uint)num4);
-									storage_DEVICE_DESCRIPTOR.RawDeviceProperties = new byte[num5];
-									Marshal.Copy(new IntPtr(intPtr2.ToInt64() + (long)num4), storage_DEVICE_DESCRIPTOR.RawDeviceProperties, 0, num5);
-									string text = string.Empty;
-									string text2 = string.Empty;
-									bool flag10 = storage_DEVICE_DESCRIPTOR.VendorIdOffset > 0U;
-									if (flag10)
-									{
-										int offset = (int)(storage_DEVICE_DESCRIPTOR.VendorIdOffset - (uint)Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(storage_DEVICE_DESCRIPTOR));
-										string text3 = BitUtil.ReadNullTerminatedAnsiString(storage_DEVICE_DESCRIPTOR.RawDeviceProperties, offset);
-										while (text3.EndsWith("  "))
-										{
-											text3 = text3.Remove(text3.Length - 1);
-										}
-										text += text3;
-									}
-									bool flag11 = storage_DEVICE_DESCRIPTOR.ProductIdOffset > 0U;
-									if (flag11)
-									{
-										int offset2 = (int)(storage_DEVICE_DESCRIPTOR.ProductIdOffset - (uint)Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(storage_DEVICE_DESCRIPTOR));
-										string text4 = BitUtil.ReadNullTerminatedAnsiString(storage_DEVICE_DESCRIPTOR.RawDeviceProperties, offset2);
-										text += text4.Trim();
-									}
-									bool flag12 = storage_DEVICE_DESCRIPTOR.SerialNumberOffset > 0U && storage_DEVICE_DESCRIPTOR.SerialNumberOffset != uint.MaxValue;
-									if (flag12)
-									{
-										int offset3 = (int)(storage_DEVICE_DESCRIPTOR.SerialNumberOffset - (uint)Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(storage_DEVICE_DESCRIPTOR));
-										text2 = BitUtil.ReadNullTerminatedAnsiString(storage_DEVICE_DESCRIPTOR.RawDeviceProperties, offset3);
-									}
-									bool flag13 = !string.IsNullOrEmpty(text) && !string.IsNullOrEmpty(text2);
-									if (flag13)
-									{
-										byte[] array = new byte[1].Concats(Encoding.UTF8.GetBytes(text)).Concats(new byte[1]).Concats(Encoding.UTF8.GetBytes(text2)).Concats(new byte[1]).ToArray<byte>();
-										ushort num6 = HWID.AddInstanceHash(array, (uint)array.Length, true);
-										bool flag14 = !flag;
-										if (flag14)
-										{
-											num6 += 1;
-										}
-										bool flag15 = !list.Contains(num6);
-										if (flag15)
-										{
-											list.Add(num6);
-										}
-									}
-								}
-							}
-							else
-							{
-								bool flag16 = dwIoControlCode == 0x410000U;
-								if (flag16)
-								{
-									num7 = HWID.EnumInterfaceCallback(zero);
-									bool flag17 = num7 > 0;
-									if (flag17)
-									{
-										break;
-									}
-								}
-								else
-								{
-									bool flag18 = dwIoControlCode == 0x170002U;
-									if (flag18)
-									{
-										IntPtr intPtr3 = Marshal.AllocHGlobal(6);
-										uint num8 = 0U;
-										uint num9 = 0x1010101U;
-										bool flag19 = Native.DeviceIoControl(zero, 0x170002U, ref num9, 4, intPtr3, 6, out num8, IntPtr.Zero);
-										bool flag20 = !flag19;
-										if (flag20)
-										{
-											int lastWin32Error2 = Marshal.GetLastWin32Error();
-										}
-										bool flag21 = num8 == 6U;
-										if (flag21)
-										{
-											byte[] array2 = new byte[6];
-											Marshal.Copy(intPtr3, array2, 0, array2.Length);
-											ushort num10 = HWID.AddInstanceHash(array2, 6U, true);
-											bool flag22 = !flag;
-											if (flag22)
-											{
-												num10 += 1;
-											}
-											bool flag23 = !list.Contains(num10);
-											if (flag23)
-											{
-												list.Add(num10);
-											}
-										}
-										Marshal.FreeHGlobal(intPtr3);
-									}
-								}
-							}
-						}
-					}
-					bool flag24 = !flag;
-					if (flag24)
-					{
-						num7 += 1;
-					}
-					bool flag25 = !list.Contains(num7);
-					if (flag25)
-					{
-						list.Add(num7);
-					}
-					return list;
-					IL_456:;
-				}
-				Native.SetupDiDestroyDeviceInfoList(intPtr);
-			}
-			catch (Exception ex2)
-			{
-				Debug.Print(ex2.ToString());
-			}
-			return list;
-		}
-
-		// Token: 0x06000058 RID: 88 RVA: 0x00003D9C File Offset: 0x00001F9C
-		private static ushort AddInstanceHash(byte[] buffer, uint cbsize, bool readable)
-		{
-			uint[] array = HWID.SHA256Init();
-			HWID.SHA256Update(ref array, buffer, cbsize);
-			uint[] array2 = HWID.SHA256Final(ref array);
-			ushort num = (ushort)(array2[0] & 0xFFFEU);
-			bool flag = !readable;
-			if (flag)
-			{
-				num |= 1;
-			}
-			return num;
-		}
-
-		// Token: 0x06000059 RID: 89 RVA: 0x00003DE4 File Offset: 0x00001FE4
-		private static bool IsSoftwareDevice(IntPtr DevInst)
-		{
-			IntPtr intPtr = Marshal.AllocHGlobal(0xCE);
-			int num = 0x192;
-			int num2 = 0;
-			int num3 = Native.CM_Get_DevNode_Registry_PropertyW(DevInst, 0x17, ref num2, intPtr, ref num, 0);
-			bool flag = num3 == 0;
-			if (flag)
-			{
-				bool flag2 = num2 != 1 || num < 2 || Marshal.PtrToStringUni(intPtr).ToString().Trim() == "SWD";
-				if (flag2)
-				{
-					return true;
-				}
-				int num4 = 0;
-				int num5 = 0;
-				bool flag3 = Native.CM_Get_DevNode_Status(ref num4, ref num5, DevInst, 0) == 0;
-				if (flag3)
-				{
-					bool flag4 = (num4 & 1) == 0;
-					if (flag4)
-					{
-						return false;
-					}
-					IntPtr pdnDevInst = (IntPtr)0;
-					bool flag5 = Native.CM_Get_Parent(ref pdnDevInst, DevInst, 0) == 0;
-					if (flag5)
-					{
-						bool flag6 = Native.CM_Get_Device_IDW(pdnDevInst, intPtr, 0xC9U, 0U) == 0;
-						if (flag6)
-						{
-							bool flag7 = Marshal.PtrToStringUni(intPtr).Contains("HTREE\\ROOT\\0");
-							if (flag7)
-							{
-								return true;
-							}
-						}
-					}
-				}
-			}
-			return false;
-		}
-
-		// Token: 0x0600005A RID: 90 RVA: 0x00003EE0 File Offset: 0x000020E0
-		private static List<ushort> CollectInternal(ref Guid ClassGuid, bool UnknownDevice)
-		{
-			List<ushort> list = new List<ushort>();
-			Guid empty = Guid.Empty;
-			IntPtr intPtr = Native.SetupDiGetClassDevsW(ref ClassGuid, null, IntPtr.Zero, UnknownDevice ? 0x12 : 6);
-			bool flag = intPtr != IntPtr.Zero;
-			if (flag)
-			{
-				Native.SP_DEVINFO_DATA sp_DEVINFO_DATA = default(Native.SP_DEVINFO_DATA);
-				sp_DEVINFO_DATA.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVINFO_DATA>(default(Native.SP_DEVINFO_DATA));
-				uint num = 0U;
-				while (Native.SetupDiEnumDeviceInfo(intPtr, num, ref sp_DEVINFO_DATA))
-				{
-					bool flag2 = Native.SetupDiEnumDeviceInfo(intPtr, num, ref sp_DEVINFO_DATA);
-					if (flag2)
-					{
-						Guid b = Guid.Empty;
-						if (UnknownDevice)
-						{
-							int num2 = 0;
-							byte[] bytes = new byte[0];
-							bool flag3 = HWID.HwidGetPnPDeviceRegistryProperty(intPtr, sp_DEVINFO_DATA, ref num2, ref bytes);
-							if (flag3)
-							{
-								ulong numUlong;
-                                unchecked
+        private static List<ushort> CollectWwan()
+        {
+            List<ushort> ushortList = new List<ushort>();
+            IntPtr phClientHandle = IntPtr.Zero;
+            int dwClientVersion = 1;
+            int pdwNegotiatedVersion = 0;
+            int num1 = 5;
+            int num2 = 0;
+            Native.WWAN_INTERFACE_INFO_LIST ppInterfaceList = new Native.WWAN_INTERFACE_INFO_LIST();
+            try
+            {
+                if (Native.WwanOpenHandle(dwClientVersion, IntPtr.Zero, out pdwNegotiatedVersion, out phClientHandle) != 0)
+                {
+                    bool flag;
+                    do
+                    {
+                        if (Native.WwanEnumerateInterfaces(phClientHandle, 0, out ppInterfaceList) == 0)
+                        {
+                            ++num2;
+                            if (num2 <= num1)
+                            {
+                                flag = false;
+                                for (int index = 0; index < ppInterfaceList.dwNumberOfItems; ++index)
                                 {
-									numUlong = (ulong)-2;
+                                    Native.WWAN_INTERFACE_INFO wwanInterfaceInfo = ppInterfaceList.InterfaceInfo[index];
+                                    IntPtr ppData;
+                                    if (Native.WlanQueryInterface(phClientHandle, wwanInterfaceInfo.InterfaceGuid, 7, IntPtr.Zero, out int _, out ppData, out int _) != 0)
+                                    {
+                                        byte[] numArray = new byte[36];
+                                        Marshal.Copy(new IntPtr(IntPtr.Size == 4 ? (long)(ppData.ToInt32() + 652) : ppData.ToInt64() + 652L), numArray, 0, numArray.Length);
+                                        ushort num3 = HWID.AddInstanceHash(numArray, 36U, true);
+                                        if (!ushortList.Contains(num3))
+                                            ushortList.Add(num3);
+                                    }
+                                }
+                            }
+                            else
+                                break;
+                        }
+                        else
+                            break;
+                    }
+                    while (!flag);
+                }
+                if (phClientHandle != IntPtr.Zero)
+                    Native.WwanCloseHandle(phClientHandle, IntPtr.Zero);
+            }
+            catch
+            {
+            }
+            return ushortList;
+        }
 
-								}
-								bool flag4 = ((long)num2 & (long)numUlong) == 0x4EL;
-								if (flag4)
-								{
-									string g = Encoding.Unicode.GetString(bytes).Replace("\0", "");
-									b = new Guid(g);
-								}
-							}
-						}
-						else
-						{
-							b = ClassGuid;
-						}
-						bool flag5 = sp_DEVINFO_DATA.ClassGuid == b;
-						if (flag5)
-						{
-							bool flag6 = !HWID.IsSoftwareDevice(new IntPtr((long)((ulong)sp_DEVINFO_DATA.DevInst)));
-							if (flag6)
-							{
-								bool flag7 = sp_DEVINFO_DATA.Reserved != IntPtr.Zero;
-								if (flag7)
-								{
-									int num3 = 0;
-									IntPtr intPtr2 = Marshal.AllocHGlobal(0x200);
-									bool flag8 = Native.SetupDiGetDeviceRegistryProperty(intPtr, ref sp_DEVINFO_DATA, 1U, 0, intPtr2, 0x800U, ref num3);
-									if (flag8)
-									{
-										string text = Marshal.PtrToStringUni(intPtr2);
-										int num4 = text.Length * 2;
-										num4 += 2;
-										byte[] array = new byte[num3];
-										Marshal.Copy(intPtr2, array, 0, num3);
-										bool readable = HWID.HwidGetPnPRemovalPolicy(intPtr, sp_DEVINFO_DATA);
-										ushort item = HWID.AddInstanceHash(array, (uint)num4, readable);
-										bool flag9 = !list.Contains(item);
-										if (flag9)
-										{
-											list.Add(item);
-										}
-									}
-									Marshal.FreeHGlobal(intPtr2);
-								}
-							}
-						}
-					}
-					num += 1U;
-				}
-			}
-			Native.SetupDiDestroyDeviceInfoList(intPtr);
-			return list;
-		}
+        private static List<ushort> CollectHWProfile()
+        {
+            List<ushort> ushortList = new List<ushort>();
+            IntPtr num1 = Marshal.AllocHGlobal(123);
+            Native.HWProfile structure = new Native.HWProfile();
+            Marshal.StructureToPtr<Native.HWProfile>(structure, num1, false);
+            if (Native.GetCurrentHwProfile(num1))
+                Marshal.PtrToStructure<Native.HWProfile>(num1, structure);
+            else
+                structure.dwDockInfo = 1;
+            if ((structure.dwDockInfo & 4) == 0 && (structure.dwDockInfo & 3) != 3)
+            {
+                ushort num2 = HWID.AddInstanceHash(BitConverter.GetBytes(structure.dwDockInfo), 4U, false);
+                if (!ushortList.Contains(num2))
+                    ushortList.Add(num2);
+            }
+            Marshal.FreeHGlobal(num1);
+            return ushortList;
+        }
 
-		// Token: 0x0600005B RID: 91 RVA: 0x000040E4 File Offset: 0x000022E4
-		private static uint[] SHA256Init()
-		{
-			uint[] array = new uint[0x70];
-			uint[] array2 = new uint[]
-			{
-				0x6A09E667U,
-				0xBB67AE85U,
-				0x3C6EF372U,
-				0xA54FF53AU,
-				0x510E527FU,
-				0x9B05688CU,
-				0x1F83D9ABU,
-				0x5BE0CD19U,
-				0U,
-				0U
-			};
-			Buffer.BlockCopy(array2, 0, array, 0, array2.Length * 4);
-			return array;
-		}
+        private static List<ushort> CollectCPU()
+        {
+            List<ushort> ushortList = new List<ushort>();
+            byte[] first = new byte[0];
+            byte[] source = CPUID.Invoke(0);
+            byte[] numArray = CPUID.Invoke(1);
+            int num1 = (int)BitConverter.ToUInt32(numArray, 0) & -16;
+            int num2 = (int)BitConverter.ToUInt32(numArray, 4) & 16777215;
+            ushort num3 = HWID.AddInstanceHash(((IEnumerable<byte>)first).Concat<byte>((IEnumerable<byte>)((IEnumerable<byte>)source).Skip<byte>(4).Take<byte>(4).ToArray<byte>()).Concat<byte>((IEnumerable<byte>)((IEnumerable<byte>)source).Skip<byte>(12).Take<byte>(4).ToArray<byte>()).Concat<byte>((IEnumerable<byte>)((IEnumerable<byte>)source).Skip<byte>(8).Take<byte>(4).ToArray<byte>()).Concat<byte>((IEnumerable<byte>)BitConverter.GetBytes(num1)).Concat<byte>((IEnumerable<byte>)BitConverter.GetBytes(num2)).ToArray<byte>(), 20U, true);
+            if (!ushortList.Contains(num3))
+                ushortList.Add(num3);
+            return ushortList;
+        }
 
-		// Token: 0x0600005C RID: 92 RVA: 0x00004124 File Offset: 0x00002324
-		private static void SHA256Update(ref uint[] SHA256Init, byte[] buffer, uint cbsize)
-		{
-			int num = 0;
-			byte[] array = new byte[0];
-			bool flag = buffer.Length % 4 != 0;
-			if (flag)
-			{
-				buffer = buffer.Concat(new byte[4 - buffer.Length % 4]).ToArray<byte>();
-			}
-			uint[] array2 = new uint[buffer.Length / 4];
-			Buffer.BlockCopy(buffer, 0, array2, 0, buffer.Length);
-			byte[] array3 = SHA256Init.SelectMany(new Func<uint, IEnumerable<byte>>(BitConverter.GetBytes)).ToArray<byte>();
-			uint num2 = cbsize + (uint)array3[0x24];
-			int num3 = (int)(array3[0x24] & 0x3F);
-			int num4 = (int)(array3[0x24] & 0x3F);
-			array3[0x24] = (byte)num2;
-			SHA256Init[9] = (uint)((byte)num2);
-			bool flag2 = num2 < cbsize;
-			if (flag2)
-			{
-				byte[] array4 = array3;
-				int num5 = 0x20;
-				array4[num5] += 1;
-			}
-			long num6 = (long)num3 + (long)((ulong)cbsize);
-			bool flag3 = num3 != 0 && num6 == (long)num3 + (long)((ulong)cbsize) && (uint)((long)num3 + (long)((ulong)cbsize)) >= 0x40U;
-			if (flag3)
-			{
-				Buffer.BlockCopy(buffer, 0, SHA256Init, num3 + 0x28, 0x40 - num3);
-				cbsize = (uint)(num6 - 0x40L);
-				uint[] array5 = new uint[(SHA256Init.Length - 0x28) * 4];
-				Buffer.BlockCopy(SHA256Init, 0x28, array5, 0, (SHA256Init.Length - 0x28) * 4);
-				uint[] array6 = HWID.SHA256Transform(ref SHA256Init, array5);
-				array = new byte[buffer.Length - (0x40 - num4)];
-				Buffer.BlockCopy(buffer, 0x40 - num4, array, 0, buffer.Length - (0x40 - num4));
-				num = array.Length;
-			}
-			bool flag4 = num >= 3;
-			if (flag4)
-			{
-				bool flag5 = cbsize >= 0x40U;
-				if (flag5)
-				{
-					uint[] array7 = new uint[array3.Length - 0x28];
-					Buffer.BlockCopy(SHA256Init, 0x28, array7, 0, array7.Length);
-					int num7 = (int)(cbsize >> 6);
-					do
-					{
-						bool flag6 = cbsize > 0U;
-						if (flag6)
-						{
-							Buffer.BlockCopy(array, 0, array7, 0, 0x40);
-							uint[] array8 = HWID.SHA256Transform(ref SHA256Init, array7);
-							Buffer.BlockCopy(array3, 0, array7, 0, 0x28);
-							Buffer.BlockCopy(array3, 0, array2, 0, 0x40);
-						}
-						cbsize -= 0x40U;
-						num7--;
-					}
-					while (num7 != 0);
-				}
-			}
-			bool flag7 = cbsize >= 0x40U;
-			if (flag7)
-			{
-				int num8 = (int)(cbsize >> 6);
-				do
-				{
-					uint[] array9 = HWID.SHA256Transform(ref SHA256Init, array2);
-					cbsize -= 0x40U;
-					bool flag8 = cbsize > 0U;
-					if (flag8)
-					{
-						Buffer.BlockCopy(buffer, 0x40, array2, 0, buffer.Length - 0x40);
-					}
-					num8--;
-				}
-				while (num8 != 0);
-			}
-			bool flag9 = cbsize > 0U;
-			if (flag9)
-			{
-				Buffer.BlockCopy(array2, 0, SHA256Init, num4 + 0x28, (int)cbsize);
-			}
-		}
+        private static List<ushort> CollectMemory()
+        {
+            List<ushort> ushortList = new List<ushort>();
+            Native.MEMORYSTATUSEX stat = new Native.MEMORYSTATUSEX();
+            stat.dwLength = (uint)Marshal.SizeOf(typeof(Native.MEMORYSTATUSEX));
+            Native.GlobalMemoryStatusEx(ref stat);
+            byte[] bytes = BitConverter.GetBytes(stat.ullTotalPhys);
+            int int32_1 = BitConverter.ToInt32(bytes, 0);
+            int int32_2 = BitConverter.ToInt32(bytes, 4);
+            int num1 = (int)(BitUtil.PAIR(int32_2, (long)int32_1) >> 10);
+            int num2 = int32_2 >> 10;
+            uint InstalledMemorySize = 0;
+            if (!HWID.GetInstalledMemorySize(ref InstalledMemorySize))
+                InstalledMemorySize = 0U;
+            if ((long)InstalledMemorySize < (long)num1)
+                InstalledMemorySize = (uint)num1;
+            uint high = (uint)(BitUtil.PAIR(0U, (ulong)InstalledMemorySize) >> 22);
+            uint low = InstalledMemorySize << 10;
+            int num3 = 0;
+            while (high >= HWID.MemoryMagic[2 * num3] && (high > HWID.MemoryMagic[2 * num3] || low > HWID.MemoryMagic[2 * num3]))
+            {
+                ++num3;
+                if (num3 >= 8)
+                    break;
+            }
+            ushort num4 = HWID.AddInstanceHash(BitConverter.GetBytes(num3 != 8 ? num3 : 8 * (int)(BitUtil.PAIR(high, (ulong)low) - 3221225472UL >> 30) + 7), 4U, true);
+            if (!ushortList.Contains(num4))
+                ushortList.Add(num4);
+            return ushortList;
+        }
 
-		// Token: 0x0600005D RID: 93 RVA: 0x0000438C File Offset: 0x0000258C
-		private static uint[] SHA256Transform(ref uint[] SHA256Init, uint[] buffer)
-		{
-			uint[] array = SHA256Init;
-			uint[] array2 = new uint[0x10];
-			int i = 0;
-			uint num = 0U;
-			uint num2 = 0U;
-			while (i < 0x10)
-			{
-				byte[] value = BitConverter.GetBytes(buffer[i]).Reverse<byte>().ToArray<byte>();
-				array2[i] = BitConverter.ToUInt32(value, 0);
-				i++;
-			}
-			uint num3 = SHA256Init[1];
-			uint num4 = SHA256Init[4];
-			uint num5 = SHA256Init[3];
-			uint num6 = SHA256Init[0];
-			uint num7 = SHA256Init[2];
-			uint num8 = SHA256Init[5];
-			uint num9 = SHA256Init[6];
-			uint num10 = SHA256Init[7];
-			uint num11 = 0U;
-			uint num12 = num3;
-			uint num13 = num4;
-			uint num14 = num6;
-			for (;;)
-			{
-				uint num15 = num10 + array2[(int)num11] + HWID.SHA256Magic[(int)num11] + ((num13 & num8) ^ (num9 & ~num4)) + (BitUtil.RotateRight(num4, 6) ^ BitUtil.RotateRight(num4, 0xB) ^ BitUtil.RotateRight(num4, 0x19));
-				uint num16 = num15 + num5;
-				uint num17 = num14 ^ num3;
-				uint num18 = num14 & num3;
-				uint num19 = num15 + (BitUtil.RotateRight(num14, 2) ^ BitUtil.RotateRight(num14, 0xD) ^ BitUtil.RotateRight(num14, 0x16)) + (num18 ^ (num7 & num17));
-				uint num20 = num9 + array2[(int)(1U + num11)] + HWID.SHA256Magic[(int)(num11 + 1U)] + ((num16 & num13) ^ (num8 & ~num16)) + (BitUtil.RotateRight(num16, 6) ^ BitUtil.RotateRight(num16, 0xB) ^ BitUtil.RotateRight(num16, 0x19));
-				uint num21 = num20 + num7;
-				uint num22 = num20 + (BitUtil.RotateRight(num19, 2) ^ BitUtil.RotateRight(num19, 0xD) ^ BitUtil.RotateRight(num19, 0x16)) + (num18 ^ (num19 & num17));
-				uint num23 = num22;
-				uint num24 = num8 + array2[(int)(2U + num11)] + HWID.SHA256Magic[(int)(num11 + 2U)] + ((num21 & num16) ^ (num13 & ~num21)) + (BitUtil.RotateRight(num21, 6) ^ BitUtil.RotateRight(num21, 0xB) ^ BitUtil.RotateRight(num21, 0x19));
-				uint num25 = num24 + num12;
-				uint num26 = num24 + (BitUtil.RotateRight(num23, 2) ^ BitUtil.RotateRight(num23, 0xD) ^ BitUtil.RotateRight(num23, 0x16)) + ((num14 & num22) ^ (num19 & (num14 ^ num22)));
-				uint num27 = num13 + array2[(int)(3U + num11)] + HWID.SHA256Magic[(int)(num11 + 3U)] + ((num25 & num21) ^ (num16 & ~num25)) + (BitUtil.RotateRight(num25, 6) ^ BitUtil.RotateRight(num25, 0xB) ^ BitUtil.RotateRight(num25, 0x19));
-				uint num28 = num27 + num14;
-				uint num29 = num27 + (BitUtil.RotateRight(num26, 2) ^ BitUtil.RotateRight(num26, 0xD) ^ BitUtil.RotateRight(num26, 0x16)) + ((num26 & num22) ^ (num19 & (num26 ^ num22)));
-				uint num30 = num16 + array2[(int)(4U + num11)] + HWID.SHA256Magic[(int)(num11 + 4U)] + ((num28 & num25) ^ (num21 & ~num28)) + (BitUtil.RotateRight(num28, 6) ^ BitUtil.RotateRight(num28, 0xB) ^ BitUtil.RotateRight(num28, 0x19));
-				num10 = num30 + num19;
-				num5 = num30 + (BitUtil.RotateRight(num29, 2) ^ BitUtil.RotateRight(num29, 0xD) ^ BitUtil.RotateRight(num29, 0x16)) + ((num29 & num26) ^ (num22 & (num29 ^ num26)));
-				uint num31 = num21 + array2[(int)(5U + num11)] + HWID.SHA256Magic[(int)(num11 + 5U)] + ((num28 & num10) ^ (num25 & ~num10)) + (BitUtil.RotateRight(num10, 6) ^ BitUtil.RotateRight(num10, 0xB) ^ BitUtil.RotateRight(num10, 0x19));
-				num9 = num31 + num23;
-				uint num32 = num31 + (BitUtil.RotateRight(num5, 2) ^ BitUtil.RotateRight(num5, 0xD) ^ BitUtil.RotateRight(num5, 0x16)) + ((num5 & num29) ^ (num26 & (num5 ^ num29)));
-				num7 = num32;
-				uint num33 = num25 + array2[(int)(6U + num11)] + HWID.SHA256Magic[(int)(num11 + 6U)] + ((num9 & num10) ^ (num28 & ~num9)) + (BitUtil.RotateRight(num9, 6) ^ BitUtil.RotateRight(num9, 0xB) ^ BitUtil.RotateRight(num9, 0x19));
-				num8 = num33 + num26;
-				num12 = num33 + (BitUtil.RotateRight(num32, 2) ^ BitUtil.RotateRight(num32, 0xD) ^ BitUtil.RotateRight(num32, 0x16)) + ((num32 & num5) ^ (num29 & (num32 ^ num5)));
-				uint num34 = array2[(int)(7U + num11)] + HWID.SHA256Magic[(int)(num11 + 7U)] + ((num8 & num9) ^ (num10 & ~num8)) + (BitUtil.RotateRight(num8, 6) ^ BitUtil.RotateRight(num8, 0xB) ^ BitUtil.RotateRight(num8, 0x19));
-				num11 += 8U;
-				uint num35 = num28 + num34;
-				num13 = num35 + num29;
-				uint num36 = num35 + (BitUtil.RotateRight(num12, 2) ^ BitUtil.RotateRight(num12, 0xD) ^ BitUtil.RotateRight(num12, 0x16));
-				uint num37 = (num12 & num32) ^ (num5 & (num12 ^ num32));
-				uint num38 = num36 + num37;
-				num14 = num36 + num37;
-				bool flag = num11 >= 0x10U;
-				if (flag)
-				{
-					break;
-				}
-				num4 = num13;
-				num3 = num12;
-			}
-			bool flag2 = num11 < 0x40U;
-			if (flag2)
-			{
-				char c = (char)(num11 - 2U);
-				int num39 = (int)(num11 - 7U);
-				char c2 = (char)(num11 + 1U);
-				int num40 = (int)(num11 - 2U);
-				int num41 = (int)(num11 + 1U);
-				do
-				{
-					uint num42 = array2[(int)(num11 & 0xFU)];
-					char c3 = (char)num39;
-					int num43 = num39 + 1;
-					num42 += array2[(int)(c3 & '\u000f')] + (array2[(int)(c2 & '\u000f')] >> 3 ^ BitUtil.RotateRight(array2[(int)(c2 & '\u000f')], 7) ^ BitUtil.RotateRight(array2[(int)(c2 & '\u000f')], 0x12)) + (array2[(int)(c & '\u000f')] >> 0xA ^ BitUtil.RotateRight(array2[(int)(c & '\u000f')], 0x11) ^ BitUtil.RotateRight(array2[(int)(c & '\u000f')], 0x13));
-					array2[(int)(num11 & 0xFU)] = num42;
-					uint num44 = num10 + num42 + HWID.SHA256Magic[(int)num11] + ((num13 & num8) ^ (num9 & ~num13)) + (BitUtil.RotateRight(num13, 6) ^ BitUtil.RotateRight(num13, 0xB) ^ BitUtil.RotateRight(num13, 0x19));
-					uint num45 = num44 + num5;
-					int num46 = num41 + 1;
-					int num47 = num46;
-					int num48 = num40 + 1;
-					int num49 = num48;
-					uint num50 = num44 + (BitUtil.RotateRight(num14, 2) ^ BitUtil.RotateRight(num14, 0xD) ^ BitUtil.RotateRight(num14, 0x16)) + ((num14 & num12) ^ (num7 & (num14 ^ num12)));
-					uint num51 = array2[(int)(num11 + 2U & 0xFU)];
-					uint num52 = array2[(int)(num11 + 1U & 0xFU)];
-					int num53 = num43++ & 0xF;
-					num52 += array2[num53] + (num51 >> 3 ^ BitUtil.RotateRight(num51, 7) ^ BitUtil.RotateRight(num51, 0x12)) + (array2[num48 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num48 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num48 & 0xF], 0x13));
-					array2[(int)(num11 + 1U & 0xFU)] = num52;
-					uint num54 = num9 + num52 + HWID.SHA256Magic[(int)(num11 + 1U)] + ((num45 & num13) ^ (num8 & ~num45)) + (BitUtil.RotateRight(num45, 6) ^ BitUtil.RotateRight(num45, 0xB) ^ BitUtil.RotateRight(num45, 0x19));
-					uint num55 = num54 + num7;
-					uint num56 = num54 + (BitUtil.RotateRight(num50, 2) ^ BitUtil.RotateRight(num50, 0xD) ^ BitUtil.RotateRight(num50, 0x16)) + ((num14 & num12) ^ (num50 & (num14 ^ num12)));
-					int num57 = num47 + 1;
-					int num58 = num57;
-					uint num59 = array2[(int)(num11 + 3U & 0xFU)];
-					uint num60 = array2[(int)(num11 + 2U & 0xFU)];
-					int num61 = num43++ & 0xF;
-					num60 += array2[num61] + (num59 >> 3 ^ BitUtil.RotateRight(num59, 7) ^ BitUtil.RotateRight(num59, 0x12)) + (array2[num48 + 1 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num48 + 1 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num48 + 1 & 0xF], 0x13));
-					array2[(int)(num11 + 2U & 0xFU)] = num60;
-					uint num62 = num8 + num60 + HWID.SHA256Magic[(int)(num11 + 2U)] + ((num55 & num45) ^ (num13 & ~num55)) + (BitUtil.RotateRight(num55, 6) ^ BitUtil.RotateRight(num55, 0xB) ^ BitUtil.RotateRight(num55, 0x19));
-					uint num63 = num62 + num12;
-					num61 = (int)BitUtil.LOBYTE(num58 + 1);
-					num48 = (int)BitUtil.LOBYTE(num48 + 2);
-					uint num64 = num62 + (BitUtil.RotateRight(num56, 2) ^ BitUtil.RotateRight(num56, 0xD) ^ BitUtil.RotateRight(num56, 0x16)) + ((num14 & num56) ^ (num50 & (num14 ^ num56)));
-					uint num65 = array2[(int)(num11 + 3U & 0xFU)];
-					num65 += array2[num43++ & 0xF] + (array2[num61 & 0xF] >> 3 ^ BitUtil.RotateRight(array2[num61 & 0xF], 7) ^ BitUtil.RotateRight(array2[num61 & 0xF], 0x12)) + (array2[num48 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num48 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num48 & 0xF], 0x13));
-					array2[(int)(num11 + 3U & 0xFU)] = num65;
-					uint num66 = num13 + num65 + HWID.SHA256Magic[(int)(num11 + 3U)] + ((num63 & num55) ^ (num45 & ~num63)) + (BitUtil.RotateRight(num63, 6) ^ BitUtil.RotateRight(num63, 0xB) ^ BitUtil.RotateRight(num63, 0x19));
-					uint num67 = num66 + num14;
-					num61 = (int)BitUtil.LOBYTE(num58 + 2);
-					uint num68 = num66 + (BitUtil.RotateRight(num64, 2) ^ BitUtil.RotateRight(num64, 0xD) ^ BitUtil.RotateRight(num64, 0x16)) + ((num64 & num56) ^ (num50 & (num64 ^ num56)));
-					uint num69 = array2[(int)(num11 + 4U & 0xFU)];
-					num69 += array2[num43++ & 0xF] + (array2[num61 & 0xF] >> 3 ^ BitUtil.RotateRight(array2[num61 & 0xF], 7) ^ BitUtil.RotateRight(array2[num61 & 0xF], 0x12)) + (array2[num49 + 3 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num49 + 3 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num49 + 3 & 0xF], 0x13));
-					array2[(int)(num11 + 4U & 0xFU)] = num69;
-					uint num70 = num45 + num69 + HWID.SHA256Magic[(int)(num11 + 4U)] + ((num67 & num63) ^ (num55 & ~num67)) + (BitUtil.RotateRight(num67, 6) ^ BitUtil.RotateRight(num67, 0xB) ^ BitUtil.RotateRight(num67, 0x19));
-					num10 = num70 + num50;
-					num61 = (int)BitUtil.LOBYTE(num58 + 3);
-					uint num71 = num70 + (BitUtil.RotateRight(num68, 2) ^ BitUtil.RotateRight(num68, 0xD) ^ BitUtil.RotateRight(num68, 0x16)) + ((num68 & num64) ^ (num56 & (num68 ^ num64)));
-					uint num72 = array2[(int)(num11 + 5U & 0xFU)];
-					num72 += array2[num43 & 0xF] + (array2[num61 & 0xF] >> 3 ^ BitUtil.RotateRight(array2[num61 & 0xF], 7) ^ BitUtil.RotateRight(array2[num61 & 0xF], 0x12)) + (array2[num49 + 4 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num49 + 4 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num49 + 4 & 0xF], 0x13));
-					array2[(int)(num11 + 5U & 0xFU)] = num72;
-					uint num73 = num55 + num72 + HWID.SHA256Magic[(int)(num11 + 5U)] + ((num67 & num10) ^ (num63 & ~num10)) + (BitUtil.RotateRight(num10, 6) ^ BitUtil.RotateRight(num10, 0xB) ^ BitUtil.RotateRight(num10, 0x19));
-					num9 = num73 + num56;
-					num43++;
-					num61 = (int)BitUtil.LOBYTE(num58 + 4);
-					num7 = num73 + (BitUtil.RotateRight(num71, 2) ^ BitUtil.RotateRight(num71, 0xD) ^ BitUtil.RotateRight(num71, 0x16)) + ((num71 & num68) ^ (num64 & (num71 ^ num68)));
-					uint num74 = array2[(int)(num11 + 6U & 0xFU)];
-					num74 += array2[num43 & 0xF] + (array2[num61 & 0xF] >> 3 ^ BitUtil.RotateRight(array2[num61 & 0xF], 7) ^ BitUtil.RotateRight(array2[num61 & 0xF], 0x12)) + (array2[num49 + 5 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num49 + 5 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num49 + 5 & 0xF], 0x13));
-					array2[(int)(num11 + 6U & 0xFU)] = num74;
-					uint num75 = num63 + num74 + HWID.SHA256Magic[(int)(num11 + 6U)] + ((num9 & num10) ^ (num67 & ~num9)) + (BitUtil.RotateRight(num9, 6) ^ BitUtil.RotateRight(num9, 0xB) ^ BitUtil.RotateRight(num9, 0x19));
-					num8 = num75 + num64;
-					num43++;
-					int num76 = num58 + 5;
-					int num77 = num76;
-					int num78 = num49 + 6;
-					int num79 = num78;
-					num12 = num75 + (BitUtil.RotateRight(num7, 2) ^ BitUtil.RotateRight(num7, 0xD) ^ BitUtil.RotateRight(num7, 0x16)) + ((num7 & num71) ^ (num68 & (num7 ^ num71)));
-					uint num80 = array2[(int)(num11 + 7U & 0xFU)];
-					num80 += array2[num43 & 0xF] + (array2[num76 & 0xF] >> 3 ^ BitUtil.RotateRight(array2[num76 & 0xF], 7) ^ BitUtil.RotateRight(array2[num76 & 0xF], 0x12)) + (array2[num78 & 0xF] >> 0xA ^ BitUtil.RotateRight(array2[num78 & 0xF], 0x11) ^ BitUtil.RotateRight(array2[num78 & 0xF], 0x13));
-					array2[(int)(num11 + 7U & 0xFU)] = num80;
-					uint num81 = num80 + HWID.SHA256Magic[(int)(num11 + 7U)] + ((num8 & num9) ^ (num10 & ~num8)) + (BitUtil.RotateRight(num8, 6) ^ BitUtil.RotateRight(num8, 0xB) ^ BitUtil.RotateRight(num8, 0x19));
-					num2 = num7;
-					uint num82 = num67 + num81;
-					num13 = num82 + num68;
-					num5 = num71;
-					num11 += 8U;
-					num = num82 + (BitUtil.RotateRight(num12, 2) ^ BitUtil.RotateRight(num12, 0xD) ^ BitUtil.RotateRight(num12, 0x16)) + ((num12 & num7) ^ (num71 & (num12 ^ num7)));
-					c2 = (char)(num77 + 1);
-					num39 = num43 + 1;
-					c = (char)(num78 + 1);
-					num14 = num;
-					num41 = num77 + 1;
-					num40 = num79 + 1;
-				}
-				while (num11 < 0x40U);
-			}
-			uint num83 = num + num6;
-			array[0] = num83;
-			array[3] += num5;
-			array[2] += num2;
-			array[1] += num12;
-			array[4] += num13;
-			array[5] += num8;
-			array[6] += num9;
-			array[7] += num10;
-			Buffer.BlockCopy(array, 0, SHA256Init, 0, array.Length * 4);
-			return array2;
-		}
+        private static int GetProductName(
+          ref List<string> productList,
+          ref IntPtr buffer,
+          ref int position)
+        {
+            do
+            {
+                string stringAnsi = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(buffer.ToInt32() + position) : buffer.ToInt64() + (long)position));
+                if (!string.IsNullOrEmpty(stringAnsi))
+                    productList.Add(stringAnsi);
+                position += stringAnsi.Length + 1;
+            }
+            while (Marshal.ReadByte(buffer, position) > (byte)0);
+            ++position;
+            return position;
+        }
 
-		// Token: 0x0600005E RID: 94 RVA: 0x000050E4 File Offset: 0x000032E4
-		private static uint[] SHA256Final(ref uint[] bSHA256Init)
-		{
-			uint num = 0x40U - (bSHA256Init[9] & 0x3FU);
-			bool flag = num <= 8U;
-			if (flag)
-			{
-				num += 0x40U;
-			}
-			byte[] array = new byte[num - 8U];
-			array[0] = 0x80;
-			uint value = bSHA256Init[9] >> 0x1D | 8U * bSHA256Init[8];
-			uint value2 = 8U * bSHA256Init[9];
-			array = array.Concat(BitConverter.GetBytes(value).Reverse<byte>().ToArray<byte>()).Concat(BitConverter.GetBytes(value2).Reverse<byte>().ToArray<byte>()).ToArray<byte>();
-			HWID.SHA256Update(ref bSHA256Init, array, num);
-			uint[] array2 = new uint[8];
-			int num2 = 0;
-			do
-			{
-				uint num3 = BitConverter.ToUInt32(BitConverter.GetBytes(bSHA256Init[num2]).Reverse<byte>().ToArray<byte>(), 0);
-				array2[num2] = num3;
-				num2++;
-			}
-			while (num2 < 8);
-			bSHA256Init[8] = 0U;
-			bSHA256Init[9] = 0U;
-			bSHA256Init[0] = 0x6A09E667U;
-			bSHA256Init[1] = 0xBB67AE85U;
-			bSHA256Init[2] = 0x3C6EF372U;
-			bSHA256Init[3] = 0xA54FF53AU;
-			bSHA256Init[4] = 0x510E527FU;
-			bSHA256Init[5] = 0x9B05688CU;
-			bSHA256Init[6] = 0x1F83D9ABU;
-			bSHA256Init[7] = 0x5BE0CD19U;
-			int num4 = 0x10;
-			num2 = 0;
-			do
-			{
-				bSHA256Init[0xA + num2] = 0U;
-				num2++;
-				num4--;
-			}
-			while (num4 != 0);
-			return array2;
-		}
+        private static List<ushort> CollectBIOS()
+        {
+            List<ushort> ushortList = new List<ushort>();
+            List<string> stringList = new List<string>();
+            uint systemFirmwareTable = Native.GetSystemFirmwareTable(1381190978U, 0U, IntPtr.Zero, 0U);
+            IntPtr num1 = Marshal.AllocHGlobal((int)systemFirmwareTable);
+            Native.GetSystemFirmwareTable(1381190978U, 0U, num1, systemFirmwareTable);
+            int num2 = 8;
+            SMBIOS.BIOSInformation structure1 = (SMBIOS.BIOSInformation)Marshal.PtrToStructure(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num2) : num1.ToInt64() + (long)num2), typeof(SMBIOS.BIOSInformation));
+            int num3 = num2 + (int)structure1.header.length;
+            string stringAnsi1 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num3) : num1.ToInt64() + (long)num3));
+            int num4 = num3 + (stringAnsi1.Length + 1);
+            string stringAnsi2 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num4) : num1.ToInt64() + (long)num4));
+            int num5 = num4 + (stringAnsi2.Length + 1);
+            string stringAnsi3 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num5) : num1.ToInt64() + (long)num5));
+            int num6 = num5 + (stringAnsi3.Length + 1) + 1;
+            int num7 = num6 + 8;
+            SMBIOS.SMBIOSTableSystemInfo structure2 = (SMBIOS.SMBIOSTableSystemInfo)Marshal.PtrToStructure(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num6) : num1.ToInt64() + (long)num6), typeof(SMBIOS.SMBIOSTableSystemInfo));
+            int num8 = num6 + (int)structure2.header.length;
+            string stringAnsi4 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num8) : num1.ToInt64() + (long)num8));
+            int num9 = num8 + (stringAnsi4.Length + 1);
+            string stringAnsi5 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num9) : num1.ToInt64() + (long)num9));
+            int num10 = num9 + (stringAnsi5.Length + 1);
+            string stringAnsi6 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num10) : num1.ToInt64() + (long)num10));
+            int num11 = num10 + (stringAnsi6.Length + 1);
+            string stringAnsi7 = Marshal.PtrToStringAnsi(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num11) : num1.ToInt64() + (long)num11));
+            int num12 = num11 + (stringAnsi7.Length + 1);
+            byte[] numArray1 = new byte[16];
+            Marshal.Copy(new IntPtr(IntPtr.Size == 4 ? (long)(num1.ToInt32() + num7) : num1.ToInt64() + (long)num7), numArray1, 0, numArray1.Length);
+            byte[] numArray2 = new byte[0];
+            byte[] buffer = !(stringAnsi5 == "None") ? ((IEnumerable<byte>)numArray1).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi4)).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi5)).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi7)).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi1)).ToArray<byte>() : ((IEnumerable<byte>)numArray1).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi4)).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi7)).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi6)).Concat<byte>((IEnumerable<byte>)Encoding.UTF8.GetBytes(stringAnsi1)).ToArray<byte>();
+            ushort num13 = HWID.AddInstanceHash(buffer, (uint)buffer.Length, true);
+            if (!ushortList.Contains(num13))
+                ushortList.Add(num13);
+            Marshal.FreeHGlobal(num1);
+            return ushortList;
+        }
 
-		// Token: 0x0600005F RID: 95 RVA: 0x0000523C File Offset: 0x0000343C
-		// Note: this type is marked as 'beforefieldinit'.
-		static HWID()
-		{
-		}
+        private static bool GetInstalledMemorySize(ref uint InstalledMemorySize)
+        {
+            List<string> productList = new List<string>();
+            uint systemFirmwareTable1 = Native.GetSystemFirmwareTable(1381190978U, 0U, IntPtr.Zero, 0U);
+            IntPtr buffer = Marshal.AllocHGlobal((int)systemFirmwareTable1);
+            uint systemFirmwareTable2 = Native.GetSystemFirmwareTable(1381190978U, 0U, buffer, systemFirmwareTable1);
+            if (systemFirmwareTable2 > 0U)
+            {
+                int position = 8;
+                byte num1 = Marshal.ReadByte(buffer, position);
+                while ((long)(position + 4) < (long)systemFirmwareTable2 && num1 != (byte)127)
+                {
+                    if (num1 == (byte)17)
+                    {
+                        SMBIOS.MemoryDevice structure = (SMBIOS.MemoryDevice)Marshal.PtrToStructure(new IntPtr(IntPtr.Size == 4 ? (long)(buffer.ToInt32() + position) : buffer.ToInt64() + (long)position), typeof(SMBIOS.MemoryDevice));
+                        if (structure.Size == (ushort)0)
+                            return false;
+                        InstalledMemorySize += (uint)structure.Size << 10;
+                        position += (int)structure.header.length;
+                        position = HWID.GetProductName(ref productList, ref buffer, ref position);
+                        num1 = Marshal.ReadByte(buffer, position);
+                    }
+                    else
+                    {
+                        int num2 = (int)Marshal.ReadByte(buffer, position + 1);
+                        position += num2;
+                        position = HWID.GetProductName(ref productList, ref buffer, ref position);
+                        num1 = Marshal.ReadByte(buffer, position);
+                    }
+                }
+            }
+            return true;
+        }
 
-		// Token: 0x04000040 RID: 64
-		private static byte[] signByte = new byte[]
-		{
-			0,
-			0xE,
-			1,
-			2,
-			3,
-			4,
-			0xF,
-			5,
-			6,
-			7,
-			8,
-			9,
-			0xA,
-			0xC
-		};
+        private static bool HwidGetPnPDeviceRegistryProperty(
+          IntPtr hDevInfo,
+          Native.SP_DEVINFO_DATA devData,
+          ref int cbsize,
+          ref byte[] buffer)
+        {
+            int requiredSize = 0;
+            if (!Native.SetupDiGetDeviceRegistryPropertyW(hDevInfo, ref devData, 8, 0, (byte[])null, 0, out requiredSize))
+            {
+                switch (Marshal.GetLastWin32Error())
+                {
+                    case 13:
+                        return false;
 
-		// Token: 0x04000041 RID: 65
-		private static uint[] SHA256Magic = new uint[]
-		{
-			0x428A2F98U,
-			0x71374491U,
-			0xB5C0FBCFU,
-			0xE9B5DBA5U,
-			0x3956C25BU,
-			0x59F111F1U,
-			0x923F82A4U,
-			0xAB1C5ED5U,
-			0xD807AA98U,
-			0x12835B01U,
-			0x243185BEU,
-			0x550C7DC3U,
-			0x72BE5D74U,
-			0x80DEB1FEU,
-			0x9BDC06A7U,
-			0xC19BF174U,
-			0xE49B69C1U,
-			0xEFBE4786U,
-			0xFC19DC6U,
-			0x240CA1CCU,
-			0x2DE92C6FU,
-			0x4A7484AAU,
-			0x5CB0A9DCU,
-			0x76F988DAU,
-			0x983E5152U,
-			0xA831C66DU,
-			0xB00327C8U,
-			0xBF597FC7U,
-			0xC6E00BF3U,
-			0xD5A79147U,
-			0x6CA6351U,
-			0x14292967U,
-			0x27B70A85U,
-			0x2E1B2138U,
-			0x4D2C6DFCU,
-			0x53380D13U,
-			0x650A7354U,
-			0x766A0ABBU,
-			0x81C2C92EU,
-			0x92722C85U,
-			0xA2BFE8A1U,
-			0xA81A664BU,
-			0xC24B8B70U,
-			0xC76C51A3U,
-			0xD192E819U,
-			0xD6990624U,
-			0xF40E3585U,
-			0x106AA070U,
-			0x19A4C116U,
-			0x1E376C08U,
-			0x2748774CU,
-			0x34B0BCB5U,
-			0x391C0CB3U,
-			0x4ED8AA4AU,
-			0x5B9CCA4FU,
-			0x682E6FF3U,
-			0x748F82EEU,
-			0x78A5636FU,
-			0x84C87814U,
-			0x8CC70208U,
-			0x90BEFFFAU,
-			0xA4506CEBU,
-			0xBEF9A3F7U,
-			0xC67178F2U
-		};
+                    case 122:
+                        buffer = new byte[requiredSize];
+                        if (Native.SetupDiGetDeviceRegistryPropertyW(hDevInfo, ref devData, 8, 0, buffer, requiredSize, out requiredSize))
+                        {
+                            cbsize = requiredSize;
+                            return true;
+                        }
+                        break;
 
-		// Token: 0x04000042 RID: 66
-		private static uint[] MemoryMagic = new uint[]
-		{
-			0U,
-			0x10000000U,
-			0U,
-			0x20000000U,
-			0U,
-			0x40000000U,
-			0U,
-			0x60000000U,
-			0U,
-			0x80000000U,
-			0U,
-			0xC0000000U,
-			0U,
-			0x40000000U,
-			0U
-		};
-	}
+                    default:
+                        return false;
+                }
+            }
+            return false;
+        }
+
+        private static bool HwidGetPnPRemovalPolicy(IntPtr hDevInfo, Native.SP_DEVINFO_DATA devData)
+        {
+            int requiredSize = 0;
+            byte[] propertyBuffer = new byte[4];
+            return !Native.SetupDiGetDeviceRegistryPropertyW(hDevInfo, ref devData, 31, 0, propertyBuffer, 4, out requiredSize) || BitConverter.ToInt32(propertyBuffer, 0) == 1 || BitConverter.ToInt32(propertyBuffer, 0) - 2 > 3;
+        }
+
+        public static ushort EnumInterfaceCallback(IntPtr hFile)
+        {
+            ushort num = 0;
+            IntPtr lpOutBuffer = Marshal.AllocHGlobal(292);
+            uint lpBytesReturned;
+            if (!Native.DeviceIoControl(hFile, 4259840U, IntPtr.Zero, 0, lpOutBuffer, 292, out lpBytesReturned, IntPtr.Zero))
+                Marshal.GetLastWin32Error();
+            if (lpBytesReturned == 292U)
+            {
+                byte[] numArray = new byte[6];
+                Marshal.Copy(new IntPtr(IntPtr.Size == 4 ? (long)(lpOutBuffer.ToInt32() + 8) : lpOutBuffer.ToInt64() + 8L), numArray, 0, numArray.Length);
+                num = HWID.AddInstanceHash(((IEnumerable<byte>)Encoding.Unicode.GetBytes(BitConverter.ToString(((IEnumerable<byte>)numArray).Reverse<byte>().ToArray<byte>()).Replace("-", "").ToLower())).Concat<byte>((IEnumerable<byte>)new byte[2]).ToArray<byte>(), 26U, true);
+            }
+            return num;
+        }
+
+        public static bool NextInterface(
+          IntPtr hDevInfo,
+          ref Guid ClassGuid,
+          ref Native.SP_DEVICE_INTERFACE_DETAIL_DATA devDetail,
+          ref Native.SP_DEVINFO_DATA deviceInfoData,
+          ref uint index)
+        {
+            uint requiredSize = 0;
+            Native.SP_DEVICE_INTERFACE_DATA deviceInterfaceData = new Native.SP_DEVICE_INTERFACE_DATA();
+            deviceInterfaceData.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVICE_INTERFACE_DATA>(deviceInterfaceData);
+            if (!Native.SetupDiEnumDeviceInterfaces(hDevInfo, IntPtr.Zero, ref ClassGuid, index, ref deviceInterfaceData))
+                return false;
+            Native.SetupDiGetDeviceInterfaceDetailW(hDevInfo, ref deviceInterfaceData, IntPtr.Zero, 0U, out requiredSize, IntPtr.Zero);
+            if (requiredSize > 6U)
+            {
+                Native.SP_DEVICE_INTERFACE_DETAIL_DATA deviceInterfaceDetailData = new Native.SP_DEVICE_INTERFACE_DETAIL_DATA();
+                deviceInterfaceDetailData.cbSize = IntPtr.Size != 8 ? 4 + Marshal.SystemDefaultCharSize : 8;
+                Native.SP_DEVINFO_DATA deviceInfoData1 = new Native.SP_DEVINFO_DATA();
+                deviceInfoData1.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVINFO_DATA>(deviceInfoData1);
+                if (Native.SetupDiGetDeviceInterfaceDetailW(hDevInfo, ref deviceInterfaceData, ref deviceInterfaceDetailData, requiredSize, out requiredSize, ref deviceInfoData1))
+                {
+                    devDetail = deviceInterfaceDetailData;
+                    deviceInfoData = deviceInfoData1;
+                }
+            }
+            return true;
+        }
+
+        public static bool NextInterfaceDeviceHandle(
+          IntPtr hDevInfo,
+          ref Guid ClassGuid,
+          ref bool readable,
+          ref uint index,
+          ref IntPtr hFile)
+        {
+            //Native.SP_DEVICE_INTERFACE_DETAIL_DATA interfaceDetailData = new Native.SP_DEVICE_INTERFACE_DETAIL_DATA();
+            //Native.SP_DEVINFO_DATA spDevinfoData = new Native.SP_DEVINFO_DATA();
+            Native.SP_DEVINFO_DATA deviceInfoData;
+            do
+            {
+                Native.SP_DEVICE_INTERFACE_DETAIL_DATA devDetail = new Native.SP_DEVICE_INTERFACE_DETAIL_DATA();
+                deviceInfoData = new Native.SP_DEVINFO_DATA();
+                if (!HWID.NextInterface(hDevInfo, ref ClassGuid, ref devDetail, ref deviceInfoData, ref index))
+                    return false;
+                ++index;
+                if (deviceInfoData.cbSize >= 0U && !HWID.IsSoftwareDevice(new IntPtr((long)deviceInfoData.DevInst)))
+                    hFile = Native.CreateFileW(devDetail.DevicePath, 0U, 3U, 0U, 3U, 0U, 0U);
+            }
+            while (hFile == IntPtr.Zero || hFile.ToInt32() == -1);
+            if (hFile != IntPtr.Zero && hFile.ToInt32() != -1)
+            {
+                readable = HWID.HwidGetPnPRemovalPolicy(hDevInfo, deviceInfoData);
+                if (readable)
+                {
+                }
+            }
+            else
+                hDevInfo = IntPtr.Zero;
+            return true;
+        }
+
+        private static List<ushort> EnumInterfaces(ref Guid ClassGuid, uint dwIoControlCode)
+        {
+            uint index = 0;
+            bool readable = false;
+            IntPtr zero = IntPtr.Zero;
+            List<ushort> ushortList = new List<ushort>();
+            try
+            {
+                IntPtr classDevsW = Native.SetupDiGetClassDevsW(ref ClassGuid, (string)null, IntPtr.Zero, 18);
+                if (classDevsW != IntPtr.Zero)
+                {
+                    ushort num1;
+                    while (true)
+                    {
+                        if (zero != IntPtr.Zero && zero.ToInt32() != -1)
+                        {
+                            try
+                            {
+                                Native.CloseHandle(zero);
+                                zero = IntPtr.Zero;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.Print(ex.ToString());
+                                zero = IntPtr.Zero;
+                            }
+                        }
+                        Native.SP_DEVICE_INTERFACE_DATA structure1 = new Native.SP_DEVICE_INTERFACE_DATA();
+                        structure1.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVICE_INTERFACE_DATA>(structure1);
+                        if (HWID.NextInterfaceDeviceHandle(classDevsW, ref ClassGuid, ref readable, ref index, ref zero))
+                        {
+                            if (zero != IntPtr.Zero && zero.ToInt32() != -1)
+                            {
+                                switch (dwIoControlCode)
+                                {
+                                    case 1507330:
+                                        IntPtr num2 = Marshal.AllocHGlobal(6);
+                                        uint lpBytesReturned1 = 0;
+                                        uint lpInBuffer1 = 16843009;
+                                        if (!Native.DeviceIoControl(zero, 1507330U, ref lpInBuffer1, 4, num2, 6, out lpBytesReturned1, IntPtr.Zero))
+                                            Marshal.GetLastWin32Error();
+                                        if (lpBytesReturned1 == 6U)
+                                        {
+                                            byte[] numArray = new byte[6];
+                                            Marshal.Copy(num2, numArray, 0, numArray.Length);
+                                            ushort num3 = HWID.AddInstanceHash(numArray, 6U, true);
+                                            if (!readable)
+                                                ++num3;
+                                            if (!ushortList.Contains(num3))
+                                                ushortList.Add(num3);
+                                        }
+                                        Marshal.FreeHGlobal(num2);
+                                        break;
+
+                                    case 2954240:
+                                        if (readable)
+                                        {
+                                            IntPtr num4 = Marshal.AllocHGlobal(1024);
+                                            uint lpBytesReturned2 = 0;
+                                            uint lpInBuffer2 = 0;
+                                            if (!Native.DeviceIoControl(zero, 2954240U, ref lpInBuffer2, 12, num4, 1024, out lpBytesReturned2, IntPtr.Zero))
+                                                Marshal.GetLastWin32Error();
+                                            Native.STORAGE_DEVICE_DESCRIPTOR structure2 = (Native.STORAGE_DEVICE_DESCRIPTOR)Marshal.PtrToStructure(num4, typeof(Native.STORAGE_DEVICE_DESCRIPTOR));
+                                            int num5 = Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(structure2);
+                                            int length = (int)structure2.Size - num5;
+                                            structure2.RawDeviceProperties = new byte[length];
+                                            Marshal.Copy(new IntPtr(num4.ToInt64() + (long)num5), structure2.RawDeviceProperties, 0, length);
+                                            string empty = string.Empty;
+                                            string s = string.Empty;
+                                            if (structure2.VendorIdOffset > 0U)
+                                            {
+                                                int offset = (int)structure2.VendorIdOffset - Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(structure2);
+                                                string str = BitUtil.ReadNullTerminatedAnsiString(structure2.RawDeviceProperties, offset);
+                                                while (str.EndsWith("  "))
+                                                    str = str.Remove(str.Length - 1);
+                                                empty += str;
+                                            }
+                                            if (structure2.ProductIdOffset > 0U)
+                                            {
+                                                int offset = (int)structure2.ProductIdOffset - Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(structure2);
+                                                string str = BitUtil.ReadNullTerminatedAnsiString(structure2.RawDeviceProperties, offset);
+                                                empty += str.Trim();
+                                            }
+                                            if (structure2.SerialNumberOffset > 0U && structure2.SerialNumberOffset != uint.MaxValue)
+                                            {
+                                                int offset = (int)structure2.SerialNumberOffset - Marshal.SizeOf<Native.STORAGE_DEVICE_DESCRIPTOR>(structure2);
+                                                s = BitUtil.ReadNullTerminatedAnsiString(structure2.RawDeviceProperties, offset);
+                                            }
+                                            if (!string.IsNullOrEmpty(empty) && !string.IsNullOrEmpty(s))
+                                            {
+                                                byte[] array = ((IEnumerable<byte>)new byte[1].Concats<byte>(Encoding.UTF8.GetBytes(empty)).Concats<byte>(new byte[1]).Concats<byte>(Encoding.UTF8.GetBytes(s)).Concats<byte>(new byte[1])).ToArray<byte>();
+                                                ushort num6 = HWID.AddInstanceHash(array, (uint)array.Length, true);
+                                                if (!readable)
+                                                    ++num6;
+                                                if (!ushortList.Contains(num6))
+                                                    ushortList.Add(num6);
+                                            }
+                                            break;
+                                        }
+                                        break;
+
+                                    case 4259840:
+                                        num1 = HWID.EnumInterfaceCallback(zero);
+                                        if (num1 <= (ushort)0)
+                                            break;
+                                        goto label_28;
+                                }
+                            }
+                        }
+                        else
+                            goto label_45;
+                    }
+                label_28:
+                    if (!readable)
+                        ++num1;
+                    if (!ushortList.Contains(num1))
+                        ushortList.Add(num1);
+                    return ushortList;
+                }
+            label_45:
+                Native.SetupDiDestroyDeviceInfoList(classDevsW);
+            }
+            catch (Exception ex)
+            {
+                Debug.Print(ex.ToString());
+            }
+            return ushortList;
+        }
+
+        private static ushort AddInstanceHash(byte[] buffer, uint cbsize, bool readable)
+        {
+            uint[] numArray = HWID.SHA256Init();
+            HWID.SHA256Update(ref numArray, buffer, cbsize);
+            ushort num = (ushort)(HWID.SHA256Final(ref numArray)[0] & 65534U);
+            if (!readable)
+                num |= (ushort)1;
+            return num;
+        }
+
+        private static bool IsSoftwareDevice(IntPtr DevInst)
+        {
+            IntPtr num = Marshal.AllocHGlobal(206);
+            int pulLength = 402;
+            int pulRegDataType = 0;
+            if (Native.CM_Get_DevNode_Registry_PropertyW(DevInst, 23, ref pulRegDataType, num, ref pulLength, 0) == 0)
+            {
+                if (pulRegDataType != 1 || pulLength < 2 || Marshal.PtrToStringUni(num).ToString().Trim() == "SWD")
+                    return true;
+                int status = 0;
+                int probNum = 0;
+                if (Native.CM_Get_DevNode_Status(ref status, ref probNum, DevInst, 0) == 0 && (status & 1) != 0)
+                {
+                    IntPtr pdnDevInst = new IntPtr();
+                    if (Native.CM_Get_Parent(ref pdnDevInst, DevInst, 0) == 0 && Native.CM_Get_Device_IDW(pdnDevInst, num, 201U, 0U) == 0 && Marshal.PtrToStringUni(num).Contains("HTREE\\ROOT\\0"))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        private static List<ushort> CollectInternal(ref Guid ClassGuid, bool UnknownDevice)
+        {
+            List<ushort> ushortList = new List<ushort>();
+            Guid empty = Guid.Empty;
+            IntPtr classDevsW = Native.SetupDiGetClassDevsW(ref ClassGuid, (string)null, IntPtr.Zero, UnknownDevice ? 18 : 6);
+            if (classDevsW != IntPtr.Zero)
+            {
+                Native.SP_DEVINFO_DATA devData = new Native.SP_DEVINFO_DATA();
+                devData.cbSize = (uint)Marshal.SizeOf<Native.SP_DEVINFO_DATA>(new Native.SP_DEVINFO_DATA());
+                for (uint MemberIndex = 0; Native.SetupDiEnumDeviceInfo(classDevsW, MemberIndex, ref devData); ++MemberIndex)
+                {
+                    if (Native.SetupDiEnumDeviceInfo(classDevsW, MemberIndex, ref devData))
+                    {
+                        Guid guid = Guid.Empty;
+                        if (UnknownDevice)
+                        {
+                            int cbsize = 0;
+                            byte[] buffer = new byte[0];
+                            if (HWID.HwidGetPnPDeviceRegistryProperty(classDevsW, devData, ref cbsize, ref buffer) && ((long)cbsize & 4294967294L) == 78L)
+                                guid = new Guid(Encoding.Unicode.GetString(buffer).Replace("\0", ""));
+                        }
+                        else
+                            guid = ClassGuid;
+                        if (devData.ClassGuid == guid && !HWID.IsSoftwareDevice(new IntPtr((long)devData.DevInst)) && devData.Reserved != IntPtr.Zero)
+                        {
+                            int requiredSize = 0;
+                            IntPtr num1 = Marshal.AllocHGlobal(512);
+                            if (Native.SetupDiGetDeviceRegistryProperty(classDevsW, ref devData, 1U, 0, num1, 2048U, ref requiredSize))
+                            {
+                                int cbsize = Marshal.PtrToStringUni(num1).Length * 2 + 2;
+                                byte[] numArray = new byte[requiredSize];
+                                Marshal.Copy(num1, numArray, 0, requiredSize);
+                                bool pnPremovalPolicy = HWID.HwidGetPnPRemovalPolicy(classDevsW, devData);
+                                ushort num2 = HWID.AddInstanceHash(numArray, (uint)cbsize, pnPremovalPolicy);
+                                if (!ushortList.Contains(num2))
+                                    ushortList.Add(num2);
+                            }
+                            Marshal.FreeHGlobal(num1);
+                        }
+                    }
+                }
+            }
+            Native.SetupDiDestroyDeviceInfoList(classDevsW);
+            return ushortList;
+        }
+
+        private static uint[] SHA256Init()
+        {
+            uint[] dst = new uint[112];
+            uint[] src = new uint[10]
+            {
+        1779033703U,
+        3144134277U,
+        1013904242U,
+        2773480762U,
+        1359893119U,
+        2600822924U,
+        528734635U,
+        1541459225U,
+        0U,
+        0U
+            };
+            Buffer.BlockCopy((Array)src, 0, (Array)dst, 0, src.Length * 4);
+            return dst;
+        }
+
+        private static void SHA256Update(ref uint[] SHA256Init, byte[] buffer, uint cbsize)
+        {
+            int num1 = 0;
+            byte[] numArray1 = new byte[0];
+            if (buffer.Length % 4 != 0)
+                buffer = ((IEnumerable<byte>)buffer).Concat<byte>((IEnumerable<byte>)new byte[4 - buffer.Length % 4]).ToArray<byte>();
+            uint[] numArray2 = new uint[buffer.Length / 4];
+            Buffer.BlockCopy((Array)buffer, 0, (Array)numArray2, 0, buffer.Length);
+            byte[] array = ((IEnumerable<uint>)SHA256Init).SelectMany<uint, byte>(new Func<uint, IEnumerable<byte>>(BitConverter.GetBytes)).ToArray<byte>();
+            uint num2 = cbsize + (uint)array[36];
+            int num3 = (int)array[36] & 63;
+            int num4 = (int)array[36] & 63;
+            array[36] = (byte)num2;
+            SHA256Init[9] = (uint)(byte)num2;
+            if (num2 < cbsize)
+                ++array[32];
+            long num5 = (long)num3 + (long)cbsize;
+            if (num3 != 0 && num5 == (long)num3 + (long)cbsize && (uint)((ulong)num3 + (ulong)cbsize) >= 64U)
+            {
+                Buffer.BlockCopy((Array)buffer, 0, (Array)SHA256Init, num3 + 40, 64 - num3);
+                cbsize = (uint)((ulong)num5 - 64UL);
+                uint[] numArray3 = new uint[(SHA256Init.Length - 40) * 4];
+                Buffer.BlockCopy((Array)SHA256Init, 40, (Array)numArray3, 0, (SHA256Init.Length - 40) * 4);
+                HWID.SHA256Transform(ref SHA256Init, numArray3);
+                numArray1 = new byte[buffer.Length - (64 - num4)];
+                Buffer.BlockCopy((Array)buffer, 64 - num4, (Array)numArray1, 0, buffer.Length - (64 - num4));
+                num1 = numArray1.Length;
+            }
+            if (num1 >= 3 && cbsize >= 64U)
+            {
+                uint[] numArray4 = new uint[array.Length - 40];
+                Buffer.BlockCopy((Array)SHA256Init, 40, (Array)numArray4, 0, numArray4.Length);
+                int num6 = (int)(cbsize >> 6);
+                do
+                {
+                    if (cbsize > 0U)
+                    {
+                        Buffer.BlockCopy((Array)numArray1, 0, (Array)numArray4, 0, 64);
+                        HWID.SHA256Transform(ref SHA256Init, numArray4);
+                        Buffer.BlockCopy((Array)array, 0, (Array)numArray4, 0, 40);
+                        Buffer.BlockCopy((Array)buffer, 64, (Array)numArray2, 0, buffer.Length - 64);
+                        buffer = ((IEnumerable<byte>)buffer).Skip<byte>(64).ToArray<byte>();
+                        cbsize -= 64U;
+                        --num6;
+                    }
+                }
+                while (num6 != 0);
+            }
+            if (cbsize >= 64U)
+            {
+                int num7 = (int)(cbsize >> 6);
+                do
+                {
+                    HWID.SHA256Transform(ref SHA256Init, numArray2);
+                    cbsize -= 64U;
+                    if (cbsize > 0U)
+                    {
+                        Buffer.BlockCopy((Array)buffer, 64, (Array)numArray2, 0, buffer.Length - 64);
+                        buffer = ((IEnumerable<byte>)buffer).Skip<byte>(64).ToArray<byte>();
+                        --num7;
+                    }
+                }
+                while (num7 != 0);
+            }
+            if (cbsize <= 0U)
+                return;
+            Buffer.BlockCopy((Array)numArray2, 0, (Array)SHA256Init, num4 + 40, (int)cbsize);
+        }
+
+        private static uint[] SHA256Transform(ref uint[] SHA256Init, uint[] buffer)
+        {
+            uint[] src = SHA256Init;
+            uint[] numArray1 = new uint[16];
+            int index1 = 0;
+            uint num1 = 0;
+            uint num2 = 0;
+            for (; index1 < 16; ++index1)
+            {
+                byte[] array = ((IEnumerable<byte>)BitConverter.GetBytes(buffer[index1])).Reverse<byte>().ToArray<byte>();
+                numArray1[index1] = BitConverter.ToUInt32(array, 0);
+            }
+            uint num3 = SHA256Init[1];
+            uint num4 = SHA256Init[4];
+            uint num5 = SHA256Init[3];
+            uint num6 = SHA256Init[0];
+            uint num7 = SHA256Init[2];
+            uint num8 = SHA256Init[5];
+            uint num9 = SHA256Init[6];
+            uint num10 = SHA256Init[7];
+            uint index2 = 0;
+            uint num11 = num3;
+            uint num12 = num4;
+            uint num13 = num6;
+            while (true)
+            {
+                uint num14 = (uint)((int)num10 + (int)numArray1[(int)index2] + (int)HWID.SHA256Magic[(int)index2] + ((int)num12 & (int)num8 ^ (int)num9 & ~(int)num4) + ((int)BitUtil.RotateRight(num4, 6) ^ (int)BitUtil.RotateRight(num4, 11) ^ (int)BitUtil.RotateRight(num4, 25)));
+                uint num15 = num14 + num5;
+                uint num16 = num13 ^ num3;
+                uint num17 = num13 & num3;
+                uint num18 = (uint)((int)num14 + ((int)BitUtil.RotateRight(num13, 2) ^ (int)BitUtil.RotateRight(num13, 13) ^ (int)BitUtil.RotateRight(num13, 22)) + ((int)num17 ^ (int)num7 & (int)num16));
+                uint num19 = (uint)((int)num9 + (int)numArray1[1 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 1] + ((int)num15 & (int)num12 ^ (int)num8 & ~(int)num15) + ((int)BitUtil.RotateRight(num15, 6) ^ (int)BitUtil.RotateRight(num15, 11) ^ (int)BitUtil.RotateRight(num15, 25)));
+                uint num20 = num19 + num7;
+                uint num21 = (uint)((int)num19 + ((int)BitUtil.RotateRight(num18, 2) ^ (int)BitUtil.RotateRight(num18, 13) ^ (int)BitUtil.RotateRight(num18, 22)) + ((int)num17 ^ (int)num18 & (int)num16));
+                uint num22 = num21;
+                uint num23 = (uint)((int)num8 + (int)numArray1[2 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 2] + ((int)num20 & (int)num15 ^ (int)num12 & ~(int)num20) + ((int)BitUtil.RotateRight(num20, 6) ^ (int)BitUtil.RotateRight(num20, 11) ^ (int)BitUtil.RotateRight(num20, 25)));
+                uint num24 = num23 + num11;
+                uint num25 = (uint)((int)num23 + ((int)BitUtil.RotateRight(num22, 2) ^ (int)BitUtil.RotateRight(num22, 13) ^ (int)BitUtil.RotateRight(num22, 22)) + ((int)num13 & (int)num21 ^ (int)num18 & ((int)num13 ^ (int)num21)));
+                uint num26 = (uint)((int)num12 + (int)numArray1[3 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 3] + ((int)num24 & (int)num20 ^ (int)num15 & ~(int)num24) + ((int)BitUtil.RotateRight(num24, 6) ^ (int)BitUtil.RotateRight(num24, 11) ^ (int)BitUtil.RotateRight(num24, 25)));
+                uint num27 = num26 + num13;
+                uint num28 = (uint)((int)num26 + ((int)BitUtil.RotateRight(num25, 2) ^ (int)BitUtil.RotateRight(num25, 13) ^ (int)BitUtil.RotateRight(num25, 22)) + ((int)num25 & (int)num21 ^ (int)num18 & ((int)num25 ^ (int)num21)));
+                uint num29 = (uint)((int)num15 + (int)numArray1[4 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 4] + ((int)num27 & (int)num24 ^ (int)num20 & ~(int)num27) + ((int)BitUtil.RotateRight(num27, 6) ^ (int)BitUtil.RotateRight(num27, 11) ^ (int)BitUtil.RotateRight(num27, 25)));
+                num10 = num29 + num18;
+                num5 = (uint)((int)num29 + ((int)BitUtil.RotateRight(num28, 2) ^ (int)BitUtil.RotateRight(num28, 13) ^ (int)BitUtil.RotateRight(num28, 22)) + ((int)num28 & (int)num25 ^ (int)num21 & ((int)num28 ^ (int)num25)));
+                uint num30 = (uint)((int)num20 + (int)numArray1[5 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 5] + ((int)num27 & (int)num10 ^ (int)num24 & ~(int)num10) + ((int)BitUtil.RotateRight(num10, 6) ^ (int)BitUtil.RotateRight(num10, 11) ^ (int)BitUtil.RotateRight(num10, 25)));
+                num9 = num30 + num22;
+                uint num31 = (uint)((int)num30 + ((int)BitUtil.RotateRight(num5, 2) ^ (int)BitUtil.RotateRight(num5, 13) ^ (int)BitUtil.RotateRight(num5, 22)) + ((int)num5 & (int)num28 ^ (int)num25 & ((int)num5 ^ (int)num28)));
+                num7 = num31;
+                uint num32 = (uint)((int)num24 + (int)numArray1[6 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 6] + ((int)num9 & (int)num10 ^ (int)num27 & ~(int)num9) + ((int)BitUtil.RotateRight(num9, 6) ^ (int)BitUtil.RotateRight(num9, 11) ^ (int)BitUtil.RotateRight(num9, 25)));
+                num8 = num32 + num25;
+                num11 = (uint)((int)num32 + ((int)BitUtil.RotateRight(num31, 2) ^ (int)BitUtil.RotateRight(num31, 13) ^ (int)BitUtil.RotateRight(num31, 22)) + ((int)num31 & (int)num5 ^ (int)num28 & ((int)num31 ^ (int)num5)));
+                uint num33 = (uint)((int)numArray1[7 + (int)index2] + (int)HWID.SHA256Magic[(int)index2 + 7] + ((int)num8 & (int)num9 ^ (int)num10 & ~(int)num8) + ((int)BitUtil.RotateRight(num8, 6) ^ (int)BitUtil.RotateRight(num8, 11) ^ (int)BitUtil.RotateRight(num8, 25)));
+                index2 += 8U;
+                uint num34 = num27 + num33;
+                num12 = num34 + num28;
+                uint num35 = num34 + (BitUtil.RotateRight(num11, 2) ^ BitUtil.RotateRight(num11, 13) ^ BitUtil.RotateRight(num11, 22));
+                uint num36 = (uint)((int)num11 & (int)num31 ^ (int)num5 & ((int)num11 ^ (int)num31));
+                uint num37 = num35 + num36;
+                num13 = num35 + num36;
+                if (index2 < 16U)
+                {
+                    num4 = num12;
+                    num3 = num11;
+                }
+                else
+                    break;
+            }
+            if (index2 < 64U)
+            {
+                char ch1 = (char)(index2 - 2U);
+                int num38 = (int)index2 - 7;
+                char ch2 = (char)(index2 + 1U);
+                int num39 = (int)index2 - 2;
+                int num40 = (int)index2 + 1;
+                do
+                {
+                    uint num41 = numArray1[(int)index2 & 15];
+                    char ch3 = (char)num38;
+                    int num42 = num38 + 1;
+                    uint num43 = num41 + (uint)((int)numArray1[(int)ch3 & 15] + ((int)(numArray1[(int)ch2 & 15] >> 3) ^ (int)BitUtil.RotateRight(numArray1[(int)ch2 & 15], 7) ^ (int)BitUtil.RotateRight(numArray1[(int)ch2 & 15], 18)) + ((int)(numArray1[(int)ch1 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[(int)ch1 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[(int)ch1 & 15], 19)));
+                    numArray1[(int)index2 & 15] = num43;
+                    uint num44 = (uint)((int)num10 + (int)num43 + (int)HWID.SHA256Magic[(int)index2] + ((int)num12 & (int)num8 ^ (int)num9 & ~(int)num12) + ((int)BitUtil.RotateRight(num12, 6) ^ (int)BitUtil.RotateRight(num12, 11) ^ (int)BitUtil.RotateRight(num12, 25)));
+                    uint num45 = num44 + num5;
+                    int num46 = num40 + 1;
+                    int num47 = num39 + 1;
+                    int num48 = num47;
+                    uint num49 = (uint)((int)num44 + ((int)BitUtil.RotateRight(num13, 2) ^ (int)BitUtil.RotateRight(num13, 13) ^ (int)BitUtil.RotateRight(num13, 22)) + ((int)num13 & (int)num11 ^ (int)num7 & ((int)num13 ^ (int)num11)));
+                    uint num50 = numArray1[(int)index2 + 2 & 15];
+                    uint num51 = numArray1[(int)index2 + 1 & 15];
+                    int num52 = num42;
+                    int num53 = num52 + 1;
+                    int index3 = num52 & 15;
+                    uint num54 = num51 + (uint)((int)numArray1[index3] + ((int)(num50 >> 3) ^ (int)BitUtil.RotateRight(num50, 7) ^ (int)BitUtil.RotateRight(num50, 18)) + ((int)(numArray1[num47 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num47 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num47 & 15], 19)));
+                    numArray1[(int)index2 + 1 & 15] = num54;
+                    uint num55 = (uint)((int)num9 + (int)num54 + (int)HWID.SHA256Magic[(int)index2 + 1] + ((int)num45 & (int)num12 ^ (int)num8 & ~(int)num45) + ((int)BitUtil.RotateRight(num45, 6) ^ (int)BitUtil.RotateRight(num45, 11) ^ (int)BitUtil.RotateRight(num45, 25)));
+                    uint num56 = num55 + num7;
+                    uint num57 = (uint)((int)num55 + ((int)BitUtil.RotateRight(num49, 2) ^ (int)BitUtil.RotateRight(num49, 13) ^ (int)BitUtil.RotateRight(num49, 22)) + ((int)num13 & (int)num11 ^ (int)num49 & ((int)num13 ^ (int)num11)));
+                    int num58 = num46 + 1;
+                    uint num59 = numArray1[(int)index2 + 3 & 15];
+                    uint num60 = numArray1[(int)index2 + 2 & 15];
+                    int num61 = num53;
+                    int num62 = num61 + 1;
+                    int index4 = num61 & 15;
+                    uint num63 = num60 + (uint)((int)numArray1[index4] + ((int)(num59 >> 3) ^ (int)BitUtil.RotateRight(num59, 7) ^ (int)BitUtil.RotateRight(num59, 18)) + ((int)(numArray1[num47 + 1 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num47 + 1 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num47 + 1 & 15], 19)));
+                    numArray1[(int)index2 + 2 & 15] = num63;
+                    uint num64 = (uint)((int)num8 + (int)num63 + (int)HWID.SHA256Magic[(int)index2 + 2] + ((int)num56 & (int)num45 ^ (int)num12 & ~(int)num56) + ((int)BitUtil.RotateRight(num56, 6) ^ (int)BitUtil.RotateRight(num56, 11) ^ (int)BitUtil.RotateRight(num56, 25)));
+                    uint num65 = num64 + num11;
+                    int num66 = (int)BitUtil.LOBYTE(num58 + 1);
+                    int num67 = (int)BitUtil.LOBYTE(num47 + 2);
+                    uint num68 = (uint)((int)num64 + ((int)BitUtil.RotateRight(num57, 2) ^ (int)BitUtil.RotateRight(num57, 13) ^ (int)BitUtil.RotateRight(num57, 22)) + ((int)num13 & (int)num57 ^ (int)num49 & ((int)num13 ^ (int)num57)));
+                    int num69 = (int)numArray1[(int)index2 + 3 & 15];
+                    uint[] numArray2 = numArray1;
+                    int num70 = num62;
+                    int num71 = num70 + 1;
+                    int index5 = num70 & 15;
+                    int num72 = (int)numArray2[index5] + ((int)(numArray1[num66 & 15] >> 3) ^ (int)BitUtil.RotateRight(numArray1[num66 & 15], 7) ^ (int)BitUtil.RotateRight(numArray1[num66 & 15], 18)) + ((int)(numArray1[num67 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num67 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num67 & 15], 19));
+                    uint num73 = (uint)(num69 + num72);
+                    numArray1[(int)index2 + 3 & 15] = num73;
+                    uint num74 = (uint)((int)num12 + (int)num73 + (int)HWID.SHA256Magic[(int)index2 + 3] + ((int)num65 & (int)num56 ^ (int)num45 & ~(int)num65) + ((int)BitUtil.RotateRight(num65, 6) ^ (int)BitUtil.RotateRight(num65, 11) ^ (int)BitUtil.RotateRight(num65, 25)));
+                    uint num75 = num74 + num13;
+                    int num76 = (int)BitUtil.LOBYTE(num58 + 2);
+                    uint num77 = (uint)((int)num74 + ((int)BitUtil.RotateRight(num68, 2) ^ (int)BitUtil.RotateRight(num68, 13) ^ (int)BitUtil.RotateRight(num68, 22)) + ((int)num68 & (int)num57 ^ (int)num49 & ((int)num68 ^ (int)num57)));
+                    int num78 = (int)numArray1[(int)index2 + 4 & 15];
+                    uint[] numArray3 = numArray1;
+                    int num79 = num71;
+                    int num80 = num79 + 1;
+                    int index6 = num79 & 15;
+                    int num81 = (int)numArray3[index6] + ((int)(numArray1[num76 & 15] >> 3) ^ (int)BitUtil.RotateRight(numArray1[num76 & 15], 7) ^ (int)BitUtil.RotateRight(numArray1[num76 & 15], 18)) + ((int)(numArray1[num48 + 3 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num48 + 3 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num48 + 3 & 15], 19));
+                    uint num82 = (uint)(num78 + num81);
+                    numArray1[(int)index2 + 4 & 15] = num82;
+                    uint num83 = (uint)((int)num45 + (int)num82 + (int)HWID.SHA256Magic[(int)index2 + 4] + ((int)num75 & (int)num65 ^ (int)num56 & ~(int)num75) + ((int)BitUtil.RotateRight(num75, 6) ^ (int)BitUtil.RotateRight(num75, 11) ^ (int)BitUtil.RotateRight(num75, 25)));
+                    num10 = num83 + num49;
+                    int num84 = (int)BitUtil.LOBYTE(num58 + 3);
+                    uint num85 = (uint)((int)num83 + ((int)BitUtil.RotateRight(num77, 2) ^ (int)BitUtil.RotateRight(num77, 13) ^ (int)BitUtil.RotateRight(num77, 22)) + ((int)num77 & (int)num68 ^ (int)num57 & ((int)num77 ^ (int)num68)));
+                    uint num86 = numArray1[(int)index2 + 5 & 15] + (uint)((int)numArray1[num80 & 15] + ((int)(numArray1[num84 & 15] >> 3) ^ (int)BitUtil.RotateRight(numArray1[num84 & 15], 7) ^ (int)BitUtil.RotateRight(numArray1[num84 & 15], 18)) + ((int)(numArray1[num48 + 4 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num48 + 4 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num48 + 4 & 15], 19)));
+                    numArray1[(int)index2 + 5 & 15] = num86;
+                    uint num87 = (uint)((int)num56 + (int)num86 + (int)HWID.SHA256Magic[(int)index2 + 5] + ((int)num75 & (int)num10 ^ (int)num65 & ~(int)num10) + ((int)BitUtil.RotateRight(num10, 6) ^ (int)BitUtil.RotateRight(num10, 11) ^ (int)BitUtil.RotateRight(num10, 25)));
+                    num9 = num87 + num57;
+                    int num88 = num80 + 1;
+                    int num89 = (int)BitUtil.LOBYTE(num58 + 4);
+                    num7 = (uint)((int)num87 + ((int)BitUtil.RotateRight(num85, 2) ^ (int)BitUtil.RotateRight(num85, 13) ^ (int)BitUtil.RotateRight(num85, 22)) + ((int)num85 & (int)num77 ^ (int)num68 & ((int)num85 ^ (int)num77)));
+                    uint num90 = numArray1[(int)index2 + 6 & 15] + (uint)((int)numArray1[num88 & 15] + ((int)(numArray1[num89 & 15] >> 3) ^ (int)BitUtil.RotateRight(numArray1[num89 & 15], 7) ^ (int)BitUtil.RotateRight(numArray1[num89 & 15], 18)) + ((int)(numArray1[num48 + 5 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num48 + 5 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num48 + 5 & 15], 19)));
+                    numArray1[(int)index2 + 6 & 15] = num90;
+                    uint num91 = (uint)((int)num65 + (int)num90 + (int)HWID.SHA256Magic[(int)index2 + 6] + ((int)num9 & (int)num10 ^ (int)num75 & ~(int)num9) + ((int)BitUtil.RotateRight(num9, 6) ^ (int)BitUtil.RotateRight(num9, 11) ^ (int)BitUtil.RotateRight(num9, 25)));
+                    num8 = num91 + num68;
+                    int num92 = num88 + 1;
+                    int num93 = num58 + 5;
+                    int num94 = num93;
+                    int num95 = num48 + 6;
+                    int num96 = num95;
+                    num11 = (uint)((int)num91 + ((int)BitUtil.RotateRight(num7, 2) ^ (int)BitUtil.RotateRight(num7, 13) ^ (int)BitUtil.RotateRight(num7, 22)) + ((int)num7 & (int)num85 ^ (int)num77 & ((int)num7 ^ (int)num85)));
+                    uint num97 = numArray1[(int)index2 + 7 & 15] + (uint)((int)numArray1[num92 & 15] + ((int)(numArray1[num93 & 15] >> 3) ^ (int)BitUtil.RotateRight(numArray1[num93 & 15], 7) ^ (int)BitUtil.RotateRight(numArray1[num93 & 15], 18)) + ((int)(numArray1[num95 & 15] >> 10) ^ (int)BitUtil.RotateRight(numArray1[num95 & 15], 17) ^ (int)BitUtil.RotateRight(numArray1[num95 & 15], 19)));
+                    numArray1[(int)index2 + 7 & 15] = num97;
+                    uint num98 = (uint)((int)num97 + (int)HWID.SHA256Magic[(int)index2 + 7] + ((int)num8 & (int)num9 ^ (int)num10 & ~(int)num8) + ((int)BitUtil.RotateRight(num8, 6) ^ (int)BitUtil.RotateRight(num8, 11) ^ (int)BitUtil.RotateRight(num8, 25)));
+                    num2 = num7;
+                    uint num99 = num75 + num98;
+                    num12 = num99 + num77;
+                    num5 = num85;
+                    index2 += 8U;
+                    num1 = (uint)((int)num99 + ((int)BitUtil.RotateRight(num11, 2) ^ (int)BitUtil.RotateRight(num11, 13) ^ (int)BitUtil.RotateRight(num11, 22)) + ((int)num11 & (int)num7 ^ (int)num85 & ((int)num11 ^ (int)num7)));
+                    ch2 = (char)(num94 + 1);
+                    num38 = num92 + 1;
+                    ch1 = (char)(num95 + 1);
+                    num13 = num1;
+                    num40 = num94 + 1;
+                    num39 = num96 + 1;
+                }
+                while (index2 < 64U);
+            }
+            uint num100 = num1 + num6;
+            src[0] = num100;
+            src[3] += num5;
+            src[2] += num2;
+            src[1] += num11;
+            src[4] += num12;
+            src[5] += num8;
+            src[6] += num9;
+            src[7] += num10;
+            Buffer.BlockCopy((Array)src, 0, (Array)SHA256Init, 0, src.Length * 4);
+            return numArray1;
+        }
+
+        private static uint[] SHA256Final(ref uint[] bSHA256Init)
+        {
+            uint cbsize = (uint)(64 - ((int)bSHA256Init[9] & 63));
+            if (cbsize <= 8U)
+                cbsize += 64U;
+            byte[] first = new byte[(int)cbsize - 8];
+            first[0] = (byte)128;
+            uint num1 = bSHA256Init[9] >> 29 | 8U * bSHA256Init[8];
+            uint num2 = 8U * bSHA256Init[9];
+            byte[] array = ((IEnumerable<byte>)first).Concat<byte>((IEnumerable<byte>)((IEnumerable<byte>)BitConverter.GetBytes(num1)).Reverse<byte>().ToArray<byte>()).Concat<byte>((IEnumerable<byte>)((IEnumerable<byte>)BitConverter.GetBytes(num2)).Reverse<byte>().ToArray<byte>()).ToArray<byte>();
+            HWID.SHA256Update(ref bSHA256Init, array, cbsize);
+            uint[] numArray = new uint[8];
+            int index = 0;
+            do
+            {
+                uint uint32 = BitConverter.ToUInt32(((IEnumerable<byte>)BitConverter.GetBytes(bSHA256Init[index])).Reverse<byte>().ToArray<byte>(), 0);
+                numArray[index] = uint32;
+                ++index;
+            }
+            while (index < 8);
+            bSHA256Init[8] = 0U;
+            bSHA256Init[9] = 0U;
+            bSHA256Init[0] = 1779033703U;
+            bSHA256Init[1] = 3144134277U;
+            bSHA256Init[2] = 1013904242U;
+            bSHA256Init[3] = 2773480762U;
+            bSHA256Init[4] = 1359893119U;
+            bSHA256Init[5] = 2600822924U;
+            bSHA256Init[6] = 528734635U;
+            bSHA256Init[7] = 1541459225U;
+            int num3 = 16;
+            int num4 = 0;
+            do
+            {
+                bSHA256Init[10 + num4] = 0U;
+                ++num4;
+                --num3;
+            }
+            while (num3 != 0);
+            return numArray;
+        }
+    }
 }
